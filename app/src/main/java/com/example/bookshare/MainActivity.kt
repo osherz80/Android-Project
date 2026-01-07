@@ -27,6 +27,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        val toolbar: com.google.android.material.appbar.MaterialToolbar = findViewById(R.id.mainToolbar)
+        setSupportActionBar(toolbar)
+
         studentsRecyclerView = findViewById(R.id.studentsRecyclerView)
         addStudentFab = findViewById(R.id.addStudentFab)
 
