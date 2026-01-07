@@ -1,12 +1,22 @@
 package com.example.bookshare
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bookshare.adapter.StudentsAdapter
+import com.example.bookshare.model.Model
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var studentsRecyclerView: RecyclerView
+    private lateinit var addStudentFab: FloatingActionButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -15,6 +25,25 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        studentsRecyclerView = findViewById(R.id.studentsRecyclerView)
+        addStudentFab = findViewById(R.id.addStudentFab)
+
+        studentsRecyclerView.setHasFixedSize(true)
+        studentsRecyclerView.layoutManager = LinearLayoutManager(this)
+        
+        // In the future (Milestone 6), we should move this to onResume to refresh the list
+        val adapter = StudentsAdapter(Model.shared.getAllStudents())
+        adapter.onStudentClick = { student ->
+             Toast.makeText(this, "Clicked on ${student.name}", Toast.LENGTH_SHORT).show()
+             // Future: Navigate to Details Activity
+        }
+        studentsRecyclerView.adapter = adapter
+
+        addStudentFab.setOnClickListener {
+            // Future: Navigate to Add Student Activity
+             Toast.makeText(this, "Add Student Clicked", Toast.LENGTH_SHORT).show()
         }
     }
 }
