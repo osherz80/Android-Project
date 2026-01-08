@@ -1,5 +1,6 @@
 package com.example.bookshare
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -39,8 +40,9 @@ class MainActivity : AppCompatActivity() {
         // In the future (Milestone 6), we should move this to onResume to refresh the list
         val adapter = StudentsAdapter(Model.shared.getAllStudents())
         adapter.onStudentClick = { student ->
-             Toast.makeText(this, "Clicked on ${student.name}", Toast.LENGTH_SHORT).show()
-             // Future: Navigate to Details Activity
+             val intent = Intent(this, StudentDetailsActivity::class.java)
+             intent.putExtra("student_id", student.id)
+             startActivity(intent)
         }
         studentsRecyclerView.adapter = adapter
 
