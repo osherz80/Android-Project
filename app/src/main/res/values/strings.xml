@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bookshare</string>
+    <string name="students_list_title">Students List</string>
 </resources>
