@@ -100,7 +100,18 @@ class EditStudentActivity : AppCompatActivity() {
         finish()
     }
     
-    
+    private fun deleteStudent() {
+        studentId?.let {
+            Model.shared.deleteStudent(it)
+            Toast.makeText(this, "Student deleted!", Toast.LENGTH_SHORT).show()
+
+            // Go back to Main Activity, clearing the back stack so we don't return to Details of a deleted student
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            finish()
+        }
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         finish()
