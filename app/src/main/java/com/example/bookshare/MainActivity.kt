@@ -38,6 +38,16 @@ class MainActivity : AppCompatActivity() {
         studentsRecyclerView.layoutManager = LinearLayoutManager(this)
         
         // In the future (Milestone 6), we should move this to onResume to refresh the list
+        
+        addStudentFab.setOnClickListener {
+            val intent = Intent(this, AddStudentActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh the list
         val adapter = StudentsAdapter(Model.shared.getAllStudents())
         adapter.onStudentClick = { student ->
              val intent = Intent(this, StudentDetailsActivity::class.java)
@@ -45,10 +55,5 @@ class MainActivity : AppCompatActivity() {
              startActivity(intent)
         }
         studentsRecyclerView.adapter = adapter
-
-        addStudentFab.setOnClickListener {
-            // Future: Navigate to Add Student Activity
-             Toast.makeText(this, "Add Student Clicked", Toast.LENGTH_SHORT).show()
-        }
     }
 }
