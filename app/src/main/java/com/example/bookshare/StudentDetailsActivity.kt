@@ -1,5 +1,6 @@
 package com.example.bookshare
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
@@ -63,8 +64,26 @@ class StudentDetailsActivity : AppCompatActivity() {
         }
 
         editButton.setOnClickListener {
-            // Milestone 5: Implement Edit Navigation
-            Toast.makeText(this, "Edit feature coming soon!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, EditStudentActivity::class.java)
+            intent.putExtra("student_id", studentId)
+            startActivity(intent)
+        }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Refresh data in case it was changed
+        val studentId = intent.getStringExtra("student_id")
+        if (studentId != null) {
+             val student = Model.shared.getStudentById(studentId)
+             if (student != null) {
+                 nameTextView.text = student.name
+                 idTextView.text = student.id
+                 checkBox.isChecked = student.checkStatus
+             } else {
+                 // Student might have been deleted
+                 finish()
+             }
         }
     }
 
