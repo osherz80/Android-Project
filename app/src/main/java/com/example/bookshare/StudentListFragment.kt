@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.bookshare.adapter.StudentsAdapter
 import com.example.bookshare.model.Model
 
+import androidx.navigation.fragment.findNavController
+
 class StudentListFragment : Fragment() {
 
     private lateinit var studentsRecyclerView: RecyclerView
@@ -26,6 +28,23 @@ class StudentListFragment : Fragment() {
         studentsRecyclerView.setHasFixedSize(true)
         studentsRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        val menuHost: androidx.core.view.MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : androidx.core.view.MenuProvider {
+            override fun onCreateMenu(menu: android.view.Menu, menuInflater: android.view.MenuInflater) {
+                menuInflater.inflate(R.menu.menu_student_list, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: android.view.MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_add -> {
+                        findNavController().navigate(R.id.action_studentListFragment_to_newStudentFragment)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, androidx.lifecycle.Lifecycle.State.RESUMED)
+
         return view
     }
 
@@ -34,8 +53,9 @@ class StudentListFragment : Fragment() {
         // Refresh the list
         val adapter = StudentsAdapter(Model.shared.getAllStudents())
         adapter.onStudentClick = { student ->
-             // Milestone 2.3: We will add Navigation here later
-             Toast.makeText(context, "Clicked on ${student.name}", Toast.LENGTH_SHORT).show()
+             val bundle = Bundle()
+             bundle.putString("student_id", student.id)
+             findNavController().navigate(R.id.action_studentListFragment_to_studentDetailsFragment, bundle)
         }
         studentsRecyclerView.adapter = adapter
     }
