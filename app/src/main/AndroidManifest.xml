@@ -22,12 +22,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".AddStudentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditStudentActivity"
-            android:exported="false" />
     </application>
 
 </manifest>
