@@ -4,29 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.bookshare.adapter.StudentsAdapter
-import com.example.bookshare.model.Model
-
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.bookshare.adapter.StudentsAdapter
+import com.example.bookshare.databinding.FragmentStudentListBinding
+import com.example.bookshare.model.Model
 
 class StudentListFragment : Fragment() {
 
-    private lateinit var studentsRecyclerView: RecyclerView
+    private var binding: FragmentStudentListBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_student_list, container, false)
+        binding = FragmentStudentListBinding.inflate(inflater, container, false)
+        val view = binding?.root
 
-        studentsRecyclerView = view.findViewById(R.id.studentsRecyclerView)
-        studentsRecyclerView.setHasFixedSize(true)
-        studentsRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding?.studentsRecyclerView?.setHasFixedSize(true)
+        binding?.studentsRecyclerView?.layoutManager = LinearLayoutManager(context)
 
         val menuHost: androidx.core.view.MenuHost = requireActivity()
         menuHost.addMenuProvider(object : androidx.core.view.MenuProvider {
@@ -57,6 +54,11 @@ class StudentListFragment : Fragment() {
              bundle.putString("student_id", student.id)
              findNavController().navigate(R.id.action_studentListFragment_to_studentDetailsFragment, bundle)
         }
-        studentsRecyclerView.adapter = adapter
+        binding?.studentsRecyclerView?.adapter = adapter
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 }
