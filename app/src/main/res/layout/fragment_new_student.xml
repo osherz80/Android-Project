@@ -149,29 +149,33 @@
         app:layout_constraintTop_toBottomOf="@id/addDateInputLayout" />
 
     <Button
-        android:id="@+id/addSaveButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="32dp"
-        android:text="Save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
-
-    <Button
         android:id="@+id/addCancelButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="32dp"
         android:text="Cancel"
         android:backgroundTint="@android:color/transparent"
         android:textColor="?attr/colorPrimary"
         app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/addSaveButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addSaveButton" />
+        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
+
+    <Button
+        android:id="@+id/addSaveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Save"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/addCancelButton"
+        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
