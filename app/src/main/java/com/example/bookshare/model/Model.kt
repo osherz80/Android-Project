@@ -10,9 +10,9 @@ class Model private constructor() {
 
     init {
         // initial data for the screen
-        students.add(Student(id = "123456", name = "Alice Smith", checkStatus = false))
-        students.add(Student(id = "789012", name = "Bob Jones", checkStatus = true))
-        students.add(Student(id = "345678", name = "Charlie Brown", checkStatus = false))
+        students.add(Student(id = "123456", name = "Alice Smith", checkStatus = false, birthDate = "2000-01-01 12:00"))
+        students.add(Student(id = "789012", name = "Bob Jones", checkStatus = true, birthDate = "1999-05-15 08:30"))
+        students.add(Student(id = "345678", name = "Charlie Brown", checkStatus = false, birthDate = "2001-12-31 23:59"))
     }
 
     fun getAllStudents(): List<Student> {
