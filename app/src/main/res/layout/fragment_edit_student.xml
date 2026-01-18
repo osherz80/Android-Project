@@ -63,7 +63,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:hint="Date"
+        android:hint="Birth Date"
         app:layout_constraintEnd_toStartOf="@id/editTimeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
@@ -85,7 +85,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp"
-        android:hint="Time"
+        android:hint="Birth Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/editDateInputLayout"
         app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
@@ -134,7 +134,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editSaveButton" />
-        
+
     <Button
         android:id="@+id/editCancelButton"
         android:layout_width="0dp"
