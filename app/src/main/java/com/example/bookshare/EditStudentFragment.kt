@@ -33,6 +33,8 @@ class EditStudentFragment : Fragment() {
             if (student != null) {
                 binding?.editNameEditText?.setText(student.name)
                 binding?.editIdEditText?.setText(student.id)
+                binding?.editPhoneEditText?.setText(student.phone)
+                binding?.editAddressEditText?.setText(student.address)
                 binding?.editCheckBox?.isChecked = student.checkStatus
                 
                 // Parse birthDate if available
@@ -103,6 +105,8 @@ class EditStudentFragment : Fragment() {
     private fun updateStudent() {
         val name = binding?.editNameEditText?.text.toString().trim()
         val isChecked = binding?.editCheckBox?.isChecked
+        val phone = binding?.editPhoneEditText?.text.toString().trim()
+        val address = binding?.editAddressEditText?.text.toString().trim()
         val date = binding?.editDateEditText?.text.toString().trim()
         val time = binding?.editTimeEditText?.text.toString().trim()
         
@@ -123,7 +127,7 @@ class EditStudentFragment : Fragment() {
         }
 
         studentId?.let {
-            val updatedStudent = Student(id = it, name = name, checkStatus = isChecked == true, birthDate = birthDate)
+            val updatedStudent = Student(id = it, name = name, checkStatus = isChecked == true, birthDate = birthDate, phone = phone, address = address)
             Model.shared.updateStudent(it, updatedStudent)
         }
 

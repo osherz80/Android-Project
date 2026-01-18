@@ -57,6 +57,44 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editPhoneInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editPhoneEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editAddressInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editPhoneInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editAddressEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPostalAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/editDateInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -66,7 +104,7 @@
         android:hint="Birth Date"
         app:layout_constraintEnd_toStartOf="@id/editTimeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/editAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editDateEditText"
@@ -88,7 +126,7 @@
         android:hint="Birth Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/editDateInputLayout"
-        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/editAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTimeEditText"
