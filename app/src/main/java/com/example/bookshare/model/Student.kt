@@ -5,5 +5,7 @@ data class Student(
     val name: String,
     val checkStatus: Boolean,
     val birthDate: String = "",
-    val avatarUrl: String = ""
+    val avatarUrl: String = "",
+    val phone: String = "",
+    val address: String = ""
 )
