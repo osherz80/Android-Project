@@ -16,6 +16,8 @@ class StudentDetailsFragment : Fragment() {
 
     private lateinit var nameTextView: TextView
     private lateinit var idTextView: TextView
+    private lateinit var phoneTextView: TextView
+    private lateinit var addressTextView: TextView
     private lateinit var checkBox: CheckBox
     private lateinit var avatarImageView: ImageView
     private var studentId: String? = null
@@ -29,6 +31,8 @@ class StudentDetailsFragment : Fragment() {
 
         nameTextView = view.findViewById(R.id.detailsNameValue)
         idTextView = view.findViewById(R.id.detailsIdValue)
+        phoneTextView = view.findViewById(R.id.detailsPhoneValue)
+        addressTextView = view.findViewById(R.id.detailsAddressValue)
         checkBox = view.findViewById(R.id.detailsCheckBox)
         avatarImageView = view.findViewById(R.id.detailsAvatar)
 
@@ -64,6 +68,8 @@ class StudentDetailsFragment : Fragment() {
              if (student != null) {
                  nameTextView.text = student.name
                  idTextView.text = student.id
+                 phoneTextView.text = student.phone
+                 addressTextView.text = student.address
                  checkBox.isChecked = student.checkStatus
                  avatarImageView.setImageResource(R.drawable.avatar_placeholder)
              } else {

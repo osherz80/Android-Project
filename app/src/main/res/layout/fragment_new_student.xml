@@ -56,6 +56,44 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addPhoneInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addIdInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addPhoneEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addAddressInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addPhoneInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addAddressEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPostalAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/addDateInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -65,7 +103,7 @@
         android:hint="Date"
         app:layout_constraintEnd_toStartOf="@id/addTimeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/addAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/addDateEditText"
@@ -87,7 +125,7 @@
         android:hint="Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/addDateInputLayout"
-        app:layout_constraintTop_toBottomOf="@id/addIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/addAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/addTimeEditText"
@@ -111,29 +149,33 @@
         app:layout_constraintTop_toBottomOf="@id/addDateInputLayout" />
 
     <Button
-        android:id="@+id/addSaveButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="32dp"
-        android:text="Save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
-
-    <Button
         android:id="@+id/addCancelButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="32dp"
         android:text="Cancel"
         android:backgroundTint="@android:color/transparent"
         android:textColor="?attr/colorPrimary"
         app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/addSaveButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addSaveButton" />
+        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
+
+    <Button
+        android:id="@+id/addSaveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Save"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/addCancelButton"
+        app:layout_constraintTop_toBottomOf="@id/addCheckBox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

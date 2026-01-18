@@ -51,8 +51,45 @@
             android:id="@+id/editIdEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:enabled="false" />
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editPhoneInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editPhoneEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editAddressInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        android:hint="Address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editPhoneInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editAddressEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPostalAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,10 +100,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:hint="Date"
+        android:hint="Birth Date"
         app:layout_constraintEnd_toStartOf="@id/editTimeInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/editAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editDateEditText"
@@ -85,10 +122,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp"
-        android:hint="Time"
+        android:hint="Birth Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/editDateInputLayout"
-        app:layout_constraintTop_toBottomOf="@id/editIdInputLayout">
+        app:layout_constraintTop_toBottomOf="@id/editAddressInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTimeEditText"
@@ -112,13 +149,19 @@
         app:layout_constraintTop_toBottomOf="@id/editDateInputLayout" />
 
     <Button
-        android:id="@+id/editSaveButton"
+        android:id="@+id/editCancelButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginTop="32dp"
-        android:text="Save"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Cancel"
+        android:backgroundTint="@android:color/transparent"
+        android:textColor="?attr/colorPrimary"
+        app:strokeColor="?attr/colorPrimary"
+        app:strokeWidth="1dp"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/editDeleteButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editCheckBox" />
 
@@ -126,28 +169,27 @@
         android:id="@+id/editDeleteButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:text="Delete Student"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginTop="32dp"
+        android:text="Delete"
         android:backgroundTint="@android:color/holo_red_light"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editSaveButton" />
-        
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/editSaveButton"
+        app:layout_constraintStart_toEndOf="@id/editCancelButton"
+        app:layout_constraintTop_toBottomOf="@id/editCheckBox" />
+
     <Button
-        android:id="@+id/editCancelButton"
+        android:id="@+id/editSaveButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="16dp"
-        android:text="Cancel"
-        android:backgroundTint="@android:color/transparent"
-        android:textColor="?attr/colorPrimary"
-        app:strokeColor="?attr/colorPrimary"
-        app:strokeWidth="1dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Save"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editDeleteButton" />
+        app:layout_constraintStart_toEndOf="@id/editDeleteButton"
+        app:layout_constraintTop_toBottomOf="@id/editCheckBox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

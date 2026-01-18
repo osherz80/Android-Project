@@ -69,6 +69,8 @@ class NewStudentFragment : Fragment() {
     private fun saveStudent() {
         val name = binding?.addNameEditText?.text.toString().trim()
         val id = binding?.addIdEditText?.text.toString().trim()
+        val phone = binding?.addPhoneEditText?.text.toString().trim()
+        val address = binding?.addAddressEditText?.text.toString().trim()
         val isChecked = binding?.addCheckBox?.isChecked
         val date = binding?.addDateEditText?.text.toString().trim()
         val time = binding?.addTimeEditText?.text.toString().trim()
@@ -93,7 +95,7 @@ class NewStudentFragment : Fragment() {
             return
         }
 
-        val student = Student(id = id, name = name, checkStatus = isChecked == true, birthDate = birthDate)
+        val student = Student(id = id, name = name, checkStatus = isChecked == true, birthDate = birthDate, phone = phone, address = address)
         Model.shared.addStudent(student)
 
         Toast.makeText(context, "Student saved!", Toast.LENGTH_SHORT).show()
