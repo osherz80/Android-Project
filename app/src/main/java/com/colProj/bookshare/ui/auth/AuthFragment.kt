@@ -105,10 +105,19 @@ class AuthFragment : Fragment() {
 
     private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
         val credential = result.credential
-        if (credential is GoogleIdTokenCredential) {
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            val idToken = googleIdTokenCredential.idToken
-            viewModel.handleGoogleIdToken(idToken)
+        
+        when {
+            credential is GoogleIdTokenCredential -> {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                viewModel.handleGoogleIdToken(googleIdTokenCredential.idToken)
+            }
+            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                viewModel.handleGoogleIdToken(googleIdTokenCredential.idToken)
+            }
+            else -> {
+                Toast.makeText(context, "Unrecognized credential type: ${credential.type}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

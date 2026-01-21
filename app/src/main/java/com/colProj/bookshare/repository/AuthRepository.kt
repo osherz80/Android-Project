@@ -30,9 +30,15 @@ class AuthRepository private constructor(context: Context) {
                         )
                         // Save to Room on background thread
                         executor.execute {
-                            userDao.insertUser(user)
-                            mainHandler.post {
-                                onResult(true, null)
+                            try {
+                                userDao.insertUser(user)
+                                mainHandler.post {
+                                    onResult(true, null)
+                                }
+                            } catch (e: Exception) {
+                                mainHandler.post {
+                                    onResult(false, "Local storage error: ${e.message}")
+                                }
                             }
                         }
                     } else {
@@ -58,9 +64,15 @@ class AuthRepository private constructor(context: Context) {
                             photoUrl = firebaseUser.photoUrl?.toString()
                         )
                         executor.execute {
-                            userDao.insertUser(user)
-                            mainHandler.post {
-                                onResult(true, null)
+                            try {
+                                userDao.insertUser(user)
+                                mainHandler.post {
+                                    onResult(true, null)
+                                }
+                            } catch (e: Exception) {
+                                mainHandler.post {
+                                    onResult(false, "Local storage error: ${e.message}")
+                                }
                             }
                         }
                     } else {
