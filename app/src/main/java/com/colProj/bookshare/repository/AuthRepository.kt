@@ -7,6 +7,7 @@ import com.colProj.bookshare.data.AppDatabase
 import com.colProj.bookshare.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import java.util.*
 import java.util.concurrent.Executors
 
 class AuthRepository private constructor(context: Context) {
@@ -16,38 +17,44 @@ class AuthRepository private constructor(context: Context) {
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    fun loginWithEmail(email: String, pass: String, onResult: (Boolean, String?) -> Unit) {
-        auth.signInWithEmailAndPassword(email, pass)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val firebaseUser = auth.currentUser
-                    if (firebaseUser != null) {
-                        val user = User(
-                            uid = firebaseUser.uid,
-                            email = firebaseUser.email,
-                            displayName = firebaseUser.displayName,
-                            photoUrl = firebaseUser.photoUrl?.toString()
-                        )
-                        // Save to Room on background thread
-                        executor.execute {
-                            try {
-                                userDao.insertUser(user)
-                                mainHandler.post {
-                                    onResult(true, null)
-                                }
-                            } catch (e: Exception) {
-                                mainHandler.post {
-                                    onResult(false, "Local storage error: ${e.message}")
-                                }
-                            }
-                        }
-                    } else {
-                        onResult(false, "Unknown error")
-                    }
-                } else {
-                    onResult(false, task.exception?.message ?: "Login failed")
+    fun registerLocal(email: String, pass: String, onResult: (Boolean, String?) -> Unit) {
+        executor.execute {
+            try {
+                val existing = userDao.getUserByEmail(email)
+                if (existing != null) {
+                    mainHandler.post { onResult(false, "User already exists") }
+                    return@execute
                 }
+
+                val newUser = User(
+                    uid = UUID.randomUUID().toString(),
+                    email = email,
+                    password = pass,
+                    isLoggedIn = true
+                )
+                userDao.insertUser(newUser)
+                mainHandler.post { onResult(true, null) }
+            } catch (e: Exception) {
+                mainHandler.post { onResult(false, e.message) }
             }
+        }
+    }
+
+    fun loginLocal(email: String, pass: String, onResult: (Boolean, String?) -> Unit) {
+        executor.execute {
+            try {
+                val user = userDao.loginLocal(email, pass)
+                if (user != null) {
+                    userDao.logoutAll()
+                    userDao.updateUser(user.copy(isLoggedIn = true))
+                    mainHandler.post { onResult(true, null) }
+                } else {
+                    mainHandler.post { onResult(false, "Invalid email or password") }
+                }
+            } catch (e: Exception) {
+                mainHandler.post { onResult(false, e.message) }
+            }
+        }
     }
 
     fun signInWithGoogle(idToken: String, onResult: (Boolean, String?) -> Unit) {
@@ -59,20 +66,18 @@ class AuthRepository private constructor(context: Context) {
                     if (firebaseUser != null) {
                         val user = User(
                             uid = firebaseUser.uid,
-                            email = firebaseUser.email,
+                            email = firebaseUser.email ?: "",
                             displayName = firebaseUser.displayName,
-                            photoUrl = firebaseUser.photoUrl?.toString()
+                            photoUrl = firebaseUser.photoUrl?.toString(),
+                            isLoggedIn = true
                         )
                         executor.execute {
                             try {
+                                userDao.logoutAll()
                                 userDao.insertUser(user)
-                                mainHandler.post {
-                                    onResult(true, null)
-                                }
+                                mainHandler.post { onResult(true, null) }
                             } catch (e: Exception) {
-                                mainHandler.post {
-                                    onResult(false, "Local storage error: ${e.message}")
-                                }
+                                mainHandler.post { onResult(false, "Local storage error: ${e.message}") }
                             }
                         }
                     } else {
@@ -87,7 +92,7 @@ class AuthRepository private constructor(context: Context) {
     fun logout(onComplete: () -> Unit) {
         auth.signOut()
         executor.execute {
-            userDao.deleteUser()
+            userDao.logoutAll()
             mainHandler.post {
                 onComplete()
             }

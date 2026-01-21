@@ -28,6 +28,7 @@ class AuthFragment : Fragment() {
 
     private val viewModel: AuthViewModel by viewModels()
     private var isPasswordVisible = false
+    private var isLoginMode = true // State tracking for manual auth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +50,12 @@ class AuthFragment : Fragment() {
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val pass = binding.etPassword.text.toString()
-            viewModel.login(email, pass)
+            
+            if (isLoginMode) {
+                viewModel.login(email, pass)
+            } else {
+                viewModel.signup(email, pass)
+            }
         }
 
         binding.ivPasswordToggle.setOnClickListener {
@@ -122,6 +128,7 @@ class AuthFragment : Fragment() {
     }
 
     private fun updateToggle(isLogin: Boolean) {
+        isLoginMode = isLogin
         if (isLogin) {
             binding.btnToggleLogin.setBackgroundResource(R.drawable.toggle_selected_bg)
             binding.btnToggleLogin.setTextColor(resources.getColor(R.color.black, null))
@@ -147,7 +154,8 @@ class AuthFragment : Fragment() {
                 is Resource.Success -> {
                     binding.btnLogin.isEnabled = true
                     binding.btnGoogle.isEnabled = true
-                    Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show()
+                    val message = if (isLoginMode) "Welcome back!" else "Account created successfully!"
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_authFragment_to_homeFragment)
                 }
                 is Resource.Error -> {
