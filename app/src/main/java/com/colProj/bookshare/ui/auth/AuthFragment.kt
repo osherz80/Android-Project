@@ -13,6 +13,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.colProj.bookshare.R
 import com.colProj.bookshare.databinding.FragmentAuthBinding
 import com.colProj.bookshare.utils.Resource
@@ -138,6 +139,7 @@ class AuthFragment : Fragment() {
                     binding.btnLogin.isEnabled = true
                     binding.btnGoogle.isEnabled = true
                     Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_authFragment_to_homeFragment)
                 }
                 is Resource.Error -> {
                     binding.btnLogin.isEnabled = true
