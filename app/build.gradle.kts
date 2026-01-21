@@ -57,6 +57,7 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     
     // Room
     implementation(libs.androidx.room.runtime)

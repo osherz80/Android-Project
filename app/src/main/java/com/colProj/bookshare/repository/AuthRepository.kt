@@ -6,6 +6,7 @@ import android.os.Looper
 import com.colProj.bookshare.data.AppDatabase
 import com.colProj.bookshare.data.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import java.util.concurrent.Executors
 
 class AuthRepository private constructor(context: Context) {
@@ -39,6 +40,34 @@ class AuthRepository private constructor(context: Context) {
                     }
                 } else {
                     onResult(false, task.exception?.message ?: "Login failed")
+                }
+            }
+    }
+
+    fun signInWithGoogle(idToken: String, onResult: (Boolean, String?) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    if (firebaseUser != null) {
+                        val user = User(
+                            uid = firebaseUser.uid,
+                            email = firebaseUser.email,
+                            displayName = firebaseUser.displayName,
+                            photoUrl = firebaseUser.photoUrl?.toString()
+                        )
+                        executor.execute {
+                            userDao.insertUser(user)
+                            mainHandler.post {
+                                onResult(true, null)
+                            }
+                        }
+                    } else {
+                        onResult(false, "Google Auth Success, but user is null")
+                    }
+                } else {
+                    onResult(false, task.exception?.message ?: "Google Sign-In failed")
                 }
             }
     }

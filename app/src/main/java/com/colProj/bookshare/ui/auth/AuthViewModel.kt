@@ -28,5 +28,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 _authState.value = Resource.Error(error ?: "Authentication failed")
             }
         }
+    fun handleGoogleIdToken(idToken: String) {
+        _authState.value = Resource.Loading()
+        repository.signInWithGoogle(idToken) { success, error ->
+            if (success) {
+                _authState.value = Resource.Success(true)
+            } else {
+                _authState.value = Resource.Error(error ?: "Google Sign-In failed")
+            }
+        }
     }
 }
