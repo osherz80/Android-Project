@@ -1,6 +1,7 @@
 package com.colProj.bookshare.ui.auth
 
 import android.app.Application
+import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,9 +15,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _authState = MutableLiveData<Resource<Boolean>>()
     val authState: LiveData<Resource<Boolean>> = _authState
 
+    private fun isValidEmail(email: String): Boolean {
+        return email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
     fun login(email: String, pass: String) {
         if (email.isBlank() || pass.isBlank()) {
             _authState.value = Resource.Error("Please fill all fields")
+            return
+        }
+
+        if (!isValidEmail(email)) {
+            _authState.value = Resource.Error("Invalid email format")
             return
         }
 
@@ -33,6 +43,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     fun signup(email: String, pass: String) {
         if (email.isBlank() || pass.isBlank()) {
             _authState.value = Resource.Error("Please fill all fields")
+            return
+        }
+
+        if (!isValidEmail(email)) {
+            _authState.value = Resource.Error("Invalid email format")
+            return
+        }
+
+        if (pass.length < 6) {
+            _authState.value = Resource.Error("Password must be at least 6 characters")
             return
         }
 
