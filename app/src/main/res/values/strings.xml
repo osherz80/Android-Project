@@ -13,5 +13,6 @@
     <string name="google">Google</string>
 
     <string name="terms_privacy">By continuing, you agree to our Terms &amp; Privacy Policy.</string>
-    <string name="google_web_client_id">YOUR_WEB_CLIENT_ID_HERE.apps.googleusercontent.com</string>
+    <string name="google_web_client_id">
+        346517111879-lg91e913uqfsve61t2d2ht4lj3smdkr3.apps.googleusercontent.com</string>
 </resources>
