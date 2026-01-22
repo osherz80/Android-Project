@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.util.Log
+import androidx.credentials.CustomCredential
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
@@ -24,62 +26,53 @@ import kotlinx.coroutines.launch
 class AuthFragment : Fragment() {
 
     private var _binding: FragmentAuthBinding? = null
-    private val binding get() = _binding!!
 
     private val viewModel: AuthViewModel by viewModels()
     private var isPasswordVisible = false
-    private var isLoginMode = true // State tracking for manual auth
+    private var isLoginMode = true 
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentAuthBinding.inflate(inflater, container, false)
-        return binding.root
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupListeners()
         observeViewModel()
     }
 
     private fun setupListeners() {
-        binding.btnLogin.setOnClickListener {
-            val email = binding.etEmail.text.toString()
-            val pass = binding.etPassword.text.toString()
-            
-            if (isLoginMode) {
-                viewModel.login(email, pass)
-            } else {
-                viewModel.signup(email, pass)
+        _binding?.let { b ->
+            b.btnLogin.setOnClickListener {
+                val email = b.etEmail.text.toString()
+                val pass = b.etPassword.text.toString()
+                
+                if (isLoginMode) {
+                    viewModel.login(email, pass)
+                } else {
+                    viewModel.signup(email, pass)
+                }
             }
-        }
 
-        binding.ivPasswordToggle.setOnClickListener {
-            isPasswordVisible = !isPasswordVisible
-            if (isPasswordVisible) {
-                binding.etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                binding.ivPasswordToggle.setImageResource(R.drawable.ic_eye) 
-            } else {
-                binding.etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-                binding.ivPasswordToggle.setImageResource(R.drawable.ic_eye)
+            b.ivPasswordToggle.setOnClickListener {
+                isPasswordVisible = !isPasswordVisible
+                b.etPassword.transformationMethod = if (isPasswordVisible) {
+                    HideReturnsTransformationMethod.getInstance()
+                } else {
+                    PasswordTransformationMethod.getInstance()
+                }
+                b.ivPasswordToggle.setImageResource(if (isPasswordVisible) R.drawable.ic_eye else R.drawable.ic_eye) 
+                b.etPassword.setSelection(b.etPassword.text.length)
             }
-            binding.etPassword.setSelection(binding.etPassword.text.length)
-        }
 
-        binding.btnToggleLogin.setOnClickListener {
-            updateToggle(true)
-        }
-
-        binding.btnToggleSignup.setOnClickListener {
-            updateToggle(false)
-        }
-
-        binding.btnGoogle.setOnClickListener {
-            signInWithGoogle()
+            b.btnToggleLogin.setOnClickListener { updateToggle(true) }
+            b.btnToggleSignup.setOnClickListener { updateToggle(false) }
+            b.btnGoogle.setOnClickListener { signInWithGoogle() }
         }
     }
 
@@ -110,58 +103,69 @@ class AuthFragment : Fragment() {
     }
 
     private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
-        val credential = result.credential
-        
-        when {
-            credential is GoogleIdTokenCredential -> {
-                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                viewModel.handleGoogleIdToken(googleIdTokenCredential.idToken)
+        when (val credential = result.credential) {
+            is GoogleIdTokenCredential -> {
+                viewModel.handleGoogleIdToken(credential.idToken)
             }
-            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
-                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                viewModel.handleGoogleIdToken(googleIdTokenCredential.idToken)
+            is CustomCredential -> {
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        viewModel.handleGoogleIdToken(googleIdTokenCredential.idToken)
+                    } catch (e: Exception) {
+                        Log.e("AuthFragment", "Failed to parse Google ID Token", e)
+                        Toast.makeText(context, "Failed to parse Google ID Token", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.d("AuthFragment", "Unrecognized custom credential type: ${credential.type}")
+                    Toast.makeText(context, "Unrecognized custom credential type", Toast.LENGTH_SHORT).show()
+                }
             }
             else -> {
-                Toast.makeText(context, "Unrecognized credential type: ${credential.type}", Toast.LENGTH_SHORT).show()
+                Log.d("AuthFragment", "Unrecognized credential type: ${credential.type}")
+                Toast.makeText(context, "Unrecognized credential type", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun updateToggle(isLogin: Boolean) {
         isLoginMode = isLogin
-        if (isLogin) {
-            binding.btnToggleLogin.setBackgroundResource(R.drawable.toggle_selected_bg)
-            binding.btnToggleLogin.setTextColor(resources.getColor(R.color.black, null))
-            binding.btnToggleSignup.setBackgroundResource(0)
-            binding.btnToggleSignup.setTextColor(resources.getColor(R.color.text_secondary, null))
-            binding.btnLogin.text = getString(R.string.log_in)
-        } else {
-            binding.btnToggleSignup.setBackgroundResource(R.drawable.toggle_selected_bg)
-            binding.btnToggleSignup.setTextColor(resources.getColor(R.color.black, null))
-            binding.btnToggleLogin.setBackgroundResource(0)
-            binding.btnToggleLogin.setTextColor(resources.getColor(R.color.text_secondary, null))
-            binding.btnLogin.text = getString(R.string.sign_up)
+        _binding?.apply {
+            val loginBg = if (isLogin) R.drawable.toggle_selected_bg else 0
+            val signupBg = if (isLogin) 0 else R.drawable.toggle_selected_bg
+            
+            btnToggleLogin.setBackgroundResource(loginBg)
+            btnToggleSignup.setBackgroundResource(signupBg)
+            
+            val activeColor = resources.getColor(R.color.black, null)
+            val inactiveColor = resources.getColor(R.color.text_secondary, null)
+            
+            btnToggleLogin.setTextColor(if (isLogin) activeColor else inactiveColor)
+            btnToggleSignup.setTextColor(if (isLogin) inactiveColor else activeColor)
+            
+            btnLogin.text = getString(if (isLogin) R.string.log_in else R.string.sign_up)
         }
     }
 
     private fun observeViewModel() {
         viewModel.authState.observe(viewLifecycleOwner) { resource ->
-            when (resource) {
-                is Resource.Loading -> {
-                    binding.btnLogin.isEnabled = false
-                    binding.btnGoogle.isEnabled = false
-                }
-                is Resource.Success -> {
-                    binding.btnLogin.isEnabled = true
-                    binding.btnGoogle.isEnabled = true
-                    val message = if (isLoginMode) "Welcome back!" else "Account created successfully!"
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_authFragment_to_homeFragment)
-                }
-                is Resource.Error -> {
-                    binding.btnLogin.isEnabled = true
-                    binding.btnGoogle.isEnabled = true
-                    Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
+            _binding?.let { b ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        b.btnLogin.isEnabled = false
+                        b.btnGoogle.isEnabled = false
+                    }
+                    is Resource.Success -> {
+                        b.btnLogin.isEnabled = true
+                        b.btnGoogle.isEnabled = true
+                        Toast.makeText(context, "Success!", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_authFragment_to_homeFragment)
+                    }
+                    is Resource.Error -> {
+                        b.btnLogin.isEnabled = true
+                        b.btnGoogle.isEnabled = true
+                        Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
