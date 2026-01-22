@@ -25,3 +25,4 @@ local.properties
 *.p12
 *.key
 google-services.json
+.agent
