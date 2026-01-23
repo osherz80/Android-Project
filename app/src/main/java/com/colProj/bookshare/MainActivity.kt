@@ -1,4 +1,4 @@
-package com.example.bookshare
+package com.colProj.bookshare
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

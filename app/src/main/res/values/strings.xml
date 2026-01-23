@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">Bookshare</string>
+    <string name="app_name">BookShare</string>
+    <string name="app_subtitle">Discover your next read.</string>
+
+    <string name="log_in">Log In</string>
+    <string name="sign_up">Sign Up</string>
+
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <string name="or_continue_with">OR CONTINUE WITH</string>
+    <string name="google">Google</string>
+
+    <string name="terms_privacy">By continuing, you agree to our Terms &amp; Privacy Policy.</string>
+    <string name="google_web_client_id" translatable="false">
+        346517111879-lg91e913uqfsve61t2d2ht4lj3smdkr3.apps.googleusercontent.com</string>
 </resources>
