@@ -15,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,11 +26,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_dark"
+        app:backgroundTint="@color/bg_dark"
+        app:elevation="8dp"
+        app:itemIconSize="22dp"
         app:itemIconTint="@color/selector_nav_colors"
         app:itemTextColor="@color/selector_nav_colors"
         app:labelVisibilityMode="labeled"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemPaddingTop="8dp"
+        app:itemPaddingBottom="8dp"
+        app:itemTextAppearanceActive="@style/BottomNavLabel"
+        app:itemTextAppearanceInactive="@style/BottomNavLabel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_menu"
-        android:visibility="gone" /> <!-- Initially gone, will show after login -->
+        android:visibility="gone" /> <!-- show after login -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

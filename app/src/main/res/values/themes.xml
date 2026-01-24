@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/neon_green</item>
         <item name="android:windowBackground">@color/bg_dark</item>
         <item name="android:statusBarColor">@color/bg_dark</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
@@ -11,5 +12,9 @@
 
     <style name="CircleImage" parent="">
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="BottomNavLabel" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">11sp</item>
     </style>
 </resources>
