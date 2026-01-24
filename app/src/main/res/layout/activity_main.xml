@@ -33,6 +33,8 @@
         app:itemTextColor="@color/selector_nav_colors"
         app:labelVisibilityMode="labeled"
         app:itemHorizontalTranslationEnabled="false"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemRippleColor="@android:color/transparent"
         app:itemTextAppearanceActive="@style/BottomNavLabel"
         app:itemTextAppearanceInactive="@style/BottomNavLabel"
         app:layout_constraintBottom_toBottomOf="parent"
