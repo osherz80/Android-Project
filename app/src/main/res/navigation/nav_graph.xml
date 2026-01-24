@@ -39,6 +39,16 @@
         android:id="@+id/profileFragment"
         android:name="com.colProj.bookshare.ui.profile.ProfileFragment"
         android:label="ProfileFragment"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_myPostsFragment"
+            app:destination="@id/myPostsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/myPostsFragment"
+        android:name="com.colProj.bookshare.ui.profile.MyPostsFragment"
+        android:label="MyPostsFragment"
+        tools:layout="@layout/fragment_my_posts" />
 
 </navigation>

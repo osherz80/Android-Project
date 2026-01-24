@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.colProj.bookshare.databinding.FragmentProfileBinding
+import com.colProj.bookshare.databinding.FragmentMyPostsBinding
 
-class ProfileFragment : Fragment() {
+class MyPostsFragment : Fragment() {
 
-    private var _binding: FragmentProfileBinding? = null
+    private var _binding: FragmentMyPostsBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -18,7 +18,7 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        _binding = FragmentMyPostsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -27,10 +27,6 @@ class ProfileFragment : Fragment() {
 
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
-        }
-
-        binding.statPosts.setOnClickListener {
-            findNavController().navigate(com.colProj.bookshare.R.id.action_profileFragment_to_myPostsFragment)
         }
     }
 
