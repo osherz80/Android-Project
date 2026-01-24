@@ -58,9 +58,17 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.authFragment -> binding.bottomNavigation.visibility = View.GONE
-                else -> binding.bottomNavigation.visibility = View.VISIBLE
+            val screensWithNav = setOf(
+                R.id.homeFragment,
+                R.id.searchFragment,
+                R.id.booksFragment,
+                R.id.profileFragment
+            )
+            
+            if (destination.id in screensWithNav) {
+                binding.bottomNavigation.visibility = View.VISIBLE
+            } else {
+                binding.bottomNavigation.visibility = View.GONE
             }
         }
     }
