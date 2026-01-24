@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="My Books Screen Coming Soon"
+        android:text="@string/my_books_coming_soon"
         android:textColor="@color/white"
         android:textSize="20sp" />
 

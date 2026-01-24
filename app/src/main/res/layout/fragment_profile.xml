@@ -24,7 +24,7 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Profile"
+        android:text="@string/profile_title"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -105,7 +105,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="48dp"
                 android:gravity="center"
-                android:text="Sci-fi enthusiast &amp; weekend reader.\nAlways looking for the next space opera."
+                android:text="@string/profile_bio"
                 android:textColor="@color/text_secondary"
                 android:textSize="16sp" />
 
@@ -117,7 +117,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="64dp"
                 android:backgroundTint="@color/neon_green"
-                android:text="Edit Profile"
+                android:text="@string/edit_profile"
                 android:textAllCaps="false"
                 android:textColor="@color/bg_dark"
                 android:textSize="18sp"
@@ -152,7 +152,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="POSTS"
+                        android:text="@string/stat_posts"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -177,7 +177,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="FOLLOWERS"
+                        android:text="@string/stat_followers"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -200,7 +200,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="FOLLOWING"
+                        android:text="@string/stat_following"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -212,7 +212,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="40dp"
-                android:text="ACCOUNT"
+                android:text="@string/section_account"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -254,7 +254,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginStart="16dp"
                         android:layout_toEndOf="@id/icon_bg_personal"
-                        android:text="Personal Details"
+                        android:text="@string/personal_details"
                         android:textColor="@color/white"
                         android:textSize="16sp" />
 
@@ -304,7 +304,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginStart="16dp"
                         android:layout_toEndOf="@id/icon_bg_notif"
-                        android:text="Notifications"
+                        android:text="@string/notifications"
                         android:textColor="@color/white"
                         android:textSize="16sp" />
 

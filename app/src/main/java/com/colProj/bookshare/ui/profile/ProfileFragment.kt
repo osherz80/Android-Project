@@ -11,26 +11,28 @@ import com.colProj.bookshare.databinding.FragmentProfileBinding
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        return binding.root
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        _binding?.apply {
+            btnBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
 
-        binding.statPosts.setOnClickListener {
-            findNavController().navigate(com.colProj.bookshare.R.id.action_profileFragment_to_myPostsFragment)
+            statPosts.setOnClickListener {
+                findNavController().navigate(com.colProj.bookshare.R.id.action_profileFragment_to_myPostsFragment)
+            }
         }
     }
 

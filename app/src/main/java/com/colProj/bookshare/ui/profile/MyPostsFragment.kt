@@ -11,22 +11,24 @@ import com.colProj.bookshare.databinding.FragmentMyPostsBinding
 class MyPostsFragment : Fragment() {
 
     private var _binding: FragmentMyPostsBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentMyPostsBinding.inflate(inflater, container, false)
-        return binding.root
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
+        _binding?.apply {
+            btnBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 

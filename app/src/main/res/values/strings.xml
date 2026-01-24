@@ -16,4 +16,25 @@
     <string name="google_web_client_id" translatable="false">
         346517111879-lg91e913uqfsve61t2d2ht4lj3smdkr3.apps.googleusercontent.com</string>
     <string name="at_bookworm99">@BookWorm99</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_bio">Sci-fi enthusiast &amp; weekend reader.\nAlways looking for the next
+        space opera.</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="stat_posts">POSTS</string>
+    <string name="stat_followers">FOLLOWERS</string>
+    <string name="stat_following">FOLLOWING</string>
+    <string name="section_account">ACCOUNT</string>
+    <string name="personal_details">Personal Details</string>
+    <string name="notifications">Notifications</string>
+
+    <!-- My Posts Screen -->
+    <string name="my_posts_title">My Posts</string>
+    <string name="my_posts_coming_soon">My Posts Screen Coming Soon</string>
+
+    <!-- Other Screens -->
+    <string name="search_coming_soon">Search Screen Coming Soon</string>
+    <string name="my_books_coming_soon">My Books Screen Coming Soon</string>
+    <string name="welcome_msg">Welcome to BookShare!</string>
 </resources>
