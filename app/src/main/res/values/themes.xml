@@ -16,5 +16,6 @@
 
     <style name="BottomNavLabel" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">11sp</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 </resources>
