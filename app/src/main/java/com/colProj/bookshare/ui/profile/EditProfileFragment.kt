@@ -60,6 +60,7 @@ class EditProfileFragment : Fragment() {
                         u.bio
                     }
 
+                    binding.etEmail.setText(u.email)
                     binding.etDisplayName.setText(initialName)
                     binding.etBio.setText(initialBio)
                     
