@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.colProj.bookshare.R
 import com.colProj.bookshare.databinding.FragmentEditProfileBinding
 
 class EditProfileFragment : Fragment() {
@@ -52,10 +53,18 @@ class EditProfileFragment : Fragment() {
             android.util.Log.d("EditProfileFragment", "User observed: $user, hasInjectedData: $hasInjectedData")
             if (!hasInjectedData) {
                 user?.let { u ->
-                    binding.etDisplayName.setText(u.displayName ?: u.email)
-                    binding.etBio.setText(u.bio ?: "")
+                    val initialName = u.displayName ?: u.email
+                    val initialBio = if (u.bio.isNullOrBlank()) {
+                        getString(R.string.profile_bio)
+                    } else {
+                        u.bio
+                    }
+
+                    binding.etDisplayName.setText(initialName)
+                    binding.etBio.setText(initialBio)
+                    
                     hasInjectedData = true
-                    android.util.Log.d("EditProfileFragment", "Data injected into fields")
+                    android.util.Log.d("EditProfileFragment", "Data injected: name=$initialName, bio=$initialBio")
                 }
             }
         }

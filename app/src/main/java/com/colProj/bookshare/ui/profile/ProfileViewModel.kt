@@ -18,9 +18,17 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     val updateStatus: LiveData<Boolean> = _updateStatus
 
     fun fetchUser() {
-        authRepository.getLoggedInUser {
-            android.util.Log.d("ProfileViewModel", "Fetched user: $it")
-            _user.value = it
+        authRepository.getLoggedInUser { user ->
+            android.util.Log.d("ProfileViewModel", "Fetched local user: $user")
+            if (user != null) {
+                _user.value = user
+            } else {
+                // Try to recover from Firebase session if local DB record is missing
+                authRepository.syncUserWithFirebase { recoveredUser ->
+                    android.util.Log.d("ProfileViewModel", "Recovered user from Firebase: $recoveredUser")
+                    _user.value = recoveredUser
+                }
+            }
         }
     }
 

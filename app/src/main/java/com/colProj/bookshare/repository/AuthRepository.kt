@@ -124,6 +124,39 @@ class AuthRepository private constructor(context: Context) {
         }
     }
 
+    fun syncUserWithFirebase(onComplete: (User?) -> Unit) {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            executor.execute {
+                try {
+                    val email = firebaseUser.email ?: ""
+                    var user = userDao.getLoggedInUser()
+                    
+                    if (user == null || user.uid != firebaseUser.uid) {
+                        // Restore existing local bio/data if found by UID
+                        val existing = userDao.getUserByUid(firebaseUser.uid)
+                        
+                        user = User(
+                            uid = firebaseUser.uid,
+                            email = email,
+                            displayName = firebaseUser.displayName ?: existing?.displayName,
+                            photoUrl = firebaseUser.photoUrl?.toString() ?: existing?.photoUrl,
+                            bio = existing?.bio,
+                            isLoggedIn = true
+                        )
+                        userDao.logoutAll()
+                        userDao.insertUser(user)
+                    }
+                    mainHandler.post { onComplete(user) }
+                } catch (e: Exception) {
+                    mainHandler.post { onComplete(null) }
+                }
+            }
+        } else {
+            onComplete(null)
+        }
+    }
+
     fun updateProfile(uid: String, displayName: String, bio: String, onResult: (Boolean) -> Unit) {
         executor.execute {
             try {
