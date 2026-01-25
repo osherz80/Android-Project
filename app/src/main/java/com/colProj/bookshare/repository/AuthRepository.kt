@@ -89,6 +89,29 @@ class AuthRepository private constructor(context: Context) {
             }
     }
 
+    fun getLoggedInUser(onResult: (User?) -> Unit) {
+        executor.execute {
+            val user = userDao.getLoggedInUser()
+            mainHandler.post { onResult(user) }
+        }
+    }
+
+    fun updatePhotoUrl(uid: String, photoUrl: String, onResult: (Boolean) -> Unit) {
+        executor.execute {
+            try {
+                val user = userDao.getLoggedInUser()
+                if (user != null && user.uid == uid) {
+                    userDao.updateUser(user.copy(photoUrl = photoUrl))
+                    mainHandler.post { onResult(true) }
+                } else {
+                    mainHandler.post { onResult(false) }
+                }
+            } catch (e: Exception) {
+                mainHandler.post { onResult(false) }
+            }
+        }
+    }
+
     fun logout(onComplete: () -> Unit) {
         auth.signOut()
         executor.execute {

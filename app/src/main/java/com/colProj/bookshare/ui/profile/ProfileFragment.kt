@@ -1,17 +1,40 @@
 package com.colProj.bookshare.ui.profile
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.colProj.bookshare.R
 import com.colProj.bookshare.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding
+
+    private val viewModel: ProfileViewModel by viewModels()
+
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let {
+            try {
+                // Persist permission for local URIs
+                requireContext().contentResolver.takePersistableUriPermission(
+                    it,
+                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (e: Exception) {
+                // Ignore if not supported
+            }
+            viewModel.updateProfilePicture(it.toString())
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,13 +48,48 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupObservers()
+
         _binding?.apply {
             btnBack.setOnClickListener {
                 findNavController().navigateUp()
             }
 
+            btnEditImage.setOnClickListener {
+                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+
             statPosts.setOnClickListener {
-                findNavController().navigate(com.colProj.bookshare.R.id.action_profileFragment_to_myPostsFragment)
+                findNavController().navigate(R.id.action_profileFragment_to_myPostsFragment)
+            }
+        }
+
+        viewModel.fetchUser()
+    }
+
+    private fun setupObservers() {
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            _binding?.let { b ->
+                user?.let { u ->
+                    b.tvUsername.text = u.displayName ?: u.email
+                    
+                    if (!u.photoUrl.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(Uri.parse(u.photoUrl))
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
+                            .circleCrop()
+                            .into(b.ivProfileImage)
+                    }
+                }
+            }
+        }
+
+        viewModel.updateStatus.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "Profile picture updated", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Failed to update profile picture", Toast.LENGTH_SHORT).show()
             }
         }
     }
