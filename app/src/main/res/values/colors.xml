@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Black Tones -->
+    <color name="bg_dark">#102217</color> <!-- App generic background -->
+    <color name="component_bg">#1C2720</color> <!-- Bottom nav, input fields, etc -->
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <!-- Bookshare Brand Colors -->
-    <color name="bg_dark">#0F110F</color> <!-- Very dark green/black -->
     <color name="neon_green">#22FF8B</color> <!-- Primary neon green -->
-    <color name="input_bg">#1C201C</color> <!-- Dark input background -->
+    <color name="input_bg">#1C2720</color> <!-- Matches component_bg -->
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#7D8D85</color>
     <color name="divider_color">#2A302A</color>
