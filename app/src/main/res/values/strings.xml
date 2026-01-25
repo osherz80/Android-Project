@@ -28,6 +28,7 @@
     <string name="section_account">ACCOUNT</string>
     <string name="personal_details">Personal Details</string>
     <string name="notifications">Notifications</string>
+    <string name="logout">Log Out</string>
 
     <!-- My Posts Screen -->
     <string name="my_posts_title">My Posts</string>

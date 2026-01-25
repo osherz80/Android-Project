@@ -59,6 +59,12 @@ class ProfileFragment : Fragment() {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
 
+            btnLogout.setOnClickListener {
+                viewModel.logout {
+                    findNavController().navigate(R.id.action_profileFragment_to_authFragment)
+                }
+            }
+
             btnEditProfile.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
             }

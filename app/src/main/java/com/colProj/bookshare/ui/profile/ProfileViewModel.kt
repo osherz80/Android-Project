@@ -61,4 +61,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
+    fun logout(onComplete: () -> Unit) {
+        authRepository.logout(onComplete)
+    }
 }
