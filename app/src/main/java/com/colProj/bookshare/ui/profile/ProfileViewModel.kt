@@ -19,6 +19,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     fun fetchUser() {
         authRepository.getLoggedInUser {
+            android.util.Log.d("ProfileViewModel", "Fetched user: $it")
             _user.value = it
         }
     }
@@ -29,6 +30,18 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             authRepository.updatePhotoUrl(currentUser.uid, uri) { success ->
                 if (success) {
                     fetchUser() // Refresh user data
+                }
+                _updateStatus.value = success
+            }
+        }
+    }
+
+    fun updateProfile(displayName: String, bio: String) {
+        val currentUser = _user.value
+        if (currentUser != null) {
+            authRepository.updateProfile(currentUser.uid, displayName, bio) { success ->
+                if (success) {
+                    fetchUser()
                 }
                 _updateStatus.value = success
             }

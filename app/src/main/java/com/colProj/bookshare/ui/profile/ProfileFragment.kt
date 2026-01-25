@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.colProj.bookshare.R
@@ -19,7 +19,7 @@ class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
 
-    private val viewModel: ProfileViewModel by viewModels()
+    private val viewModel: ProfileViewModel by activityViewModels()
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         uri?.let {
@@ -59,6 +59,10 @@ class ProfileFragment : Fragment() {
                 pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
 
+            btnEditProfile.setOnClickListener {
+                findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
+            }
+
             statPosts.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_myPostsFragment)
             }
@@ -72,6 +76,7 @@ class ProfileFragment : Fragment() {
             _binding?.let { b ->
                 user?.let { u ->
                     b.tvUsername.text = u.displayName ?: u.email
+                    b.tvBio.text = u.bio ?: getString(R.string.profile_bio)
                     
                     if (!u.photoUrl.isNullOrEmpty()) {
                         Glide.with(this)

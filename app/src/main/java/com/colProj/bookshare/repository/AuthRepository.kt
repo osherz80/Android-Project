@@ -64,15 +64,27 @@ class AuthRepository private constructor(context: Context) {
                 if (task.isSuccessful) {
                     val firebaseUser = auth.currentUser
                     if (firebaseUser != null) {
-                        val user = User(
-                            uid = firebaseUser.uid,
-                            email = firebaseUser.email ?: "",
-                            displayName = firebaseUser.displayName,
-                            photoUrl = firebaseUser.photoUrl?.toString(),
-                            isLoggedIn = true
-                        )
                         executor.execute {
                             try {
+                                val email = firebaseUser.email ?: ""
+                                // Try to find existing user to preserve bio
+                                val existingUser = userDao.getUserByUid(firebaseUser.uid) 
+                                    ?: userDao.getUserByEmail(email)
+
+                                android.util.Log.d("AuthRepository", "Google Login: displayName=${firebaseUser.displayName}, photoUrl=${firebaseUser.photoUrl}")
+
+                                val user = User(
+                                    uid = firebaseUser.uid,
+                                    email = email,
+                                    // Prioritize Google data, fallback to existing local data
+                                    displayName = firebaseUser.displayName ?: existingUser?.displayName,
+                                    photoUrl = firebaseUser.photoUrl?.toString() ?: existingUser?.photoUrl,
+                                    bio = existingUser?.bio,
+                                    isLoggedIn = true
+                                )
+                                
+                                android.util.Log.d("AuthRepository", "Saving user to DB: $user")
+                                
                                 userDao.logoutAll()
                                 userDao.insertUser(user)
                                 mainHandler.post { onResult(true, null) }
@@ -102,6 +114,22 @@ class AuthRepository private constructor(context: Context) {
                 val user = userDao.getLoggedInUser()
                 if (user != null && user.uid == uid) {
                     userDao.updateUser(user.copy(photoUrl = photoUrl))
+                    mainHandler.post { onResult(true) }
+                } else {
+                    mainHandler.post { onResult(false) }
+                }
+            } catch (e: Exception) {
+                mainHandler.post { onResult(false) }
+            }
+        }
+    }
+
+    fun updateProfile(uid: String, displayName: String, bio: String, onResult: (Boolean) -> Unit) {
+        executor.execute {
+            try {
+                val user = userDao.getLoggedInUser()
+                if (user != null && user.uid == uid) {
+                    userDao.updateUser(user.copy(displayName = displayName, bio = bio))
                     mainHandler.post { onResult(true) }
                 } else {
                     mainHandler.post { onResult(false) }

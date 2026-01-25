@@ -10,6 +10,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     fun getUserByEmail(email: String): User?
 
+    @Query("SELECT * FROM users WHERE uid = :uid LIMIT 1")
+    fun getUserByUid(uid: String): User?
+
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
     fun loginLocal(email: String, password: String): User?
 
