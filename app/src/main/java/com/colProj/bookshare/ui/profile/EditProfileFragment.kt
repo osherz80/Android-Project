@@ -70,12 +70,16 @@ class EditProfileFragment : Fragment() {
             }
         }
 
-        viewModel.updateStatus.observe(viewLifecycleOwner) { success ->
-            if (success) {
-                Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
-                findNavController().navigateUp()
-            } else {
-                Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show()
+        viewModel.profileUpdateStatus.observe(viewLifecycleOwner) { success ->
+            success?.let {
+                if (it) {
+                    Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
+                    viewModel.clearProfileStatus()
+                    findNavController().navigateUp()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show()
+                    viewModel.clearProfileStatus()
+                }
             }
         }
     }

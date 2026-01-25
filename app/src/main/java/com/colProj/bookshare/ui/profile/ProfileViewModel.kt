@@ -14,8 +14,14 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> = _user
 
-    private val _updateStatus = MutableLiveData<Boolean>()
-    val updateStatus: LiveData<Boolean> = _updateStatus
+    private val _imageUpdateStatus = MutableLiveData<Boolean?>()
+    val imageUpdateStatus: LiveData<Boolean?> = _imageUpdateStatus
+
+    private val _profileUpdateStatus = MutableLiveData<Boolean?>()
+    val profileUpdateStatus: LiveData<Boolean?> = _profileUpdateStatus
+
+    fun clearImageStatus() { _imageUpdateStatus.value = null }
+    fun clearProfileStatus() { _profileUpdateStatus.value = null }
 
     fun fetchUser() {
         authRepository.getLoggedInUser { user ->
@@ -39,7 +45,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 if (success) {
                     fetchUser() // Refresh user data
                 }
-                _updateStatus.value = success
+                _imageUpdateStatus.value = success
             }
         }
     }
@@ -51,7 +57,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 if (success) {
                     fetchUser()
                 }
-                _updateStatus.value = success
+                _profileUpdateStatus.value = success
             }
         }
     }

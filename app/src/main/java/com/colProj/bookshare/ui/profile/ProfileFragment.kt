@@ -63,6 +63,10 @@ class ProfileFragment : Fragment() {
                 findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
             }
 
+            itemPersonalDetails.setOnClickListener {
+                findNavController().navigate(R.id.action_profileFragment_to_editProfileFragment)
+            }
+
             statPosts.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_myPostsFragment)
             }
@@ -90,11 +94,14 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        viewModel.updateStatus.observe(viewLifecycleOwner) { success ->
-            if (success) {
-                Toast.makeText(requireContext(), "Profile picture updated", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Failed to update profile picture", Toast.LENGTH_SHORT).show()
+        viewModel.imageUpdateStatus.observe(viewLifecycleOwner) { success ->
+            success?.let {
+                if (it) {
+                    Toast.makeText(requireContext(), "Profile picture updated", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Failed to update profile picture", Toast.LENGTH_SHORT).show()
+                }
+                viewModel.clearImageStatus()
             }
         }
     }
