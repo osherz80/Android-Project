@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.colProj.bookshare.databinding.ActivityMainBinding
+import com.colProj.bookshare.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -44,16 +45,18 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Check if user is already logged in
-        val user = FirebaseAuth.getInstance().currentUser
-        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-        
-        if (user != null) {
-            navGraph.setStartDestination(R.id.homeFragment)
-        } else {
-            navGraph.setStartDestination(R.id.authFragment)
+        // Check if user is already logged in (Firebase or Local)
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        AuthRepository.getInstance(this).hasLoggedInUser { isLocalLoggedIn ->
+            val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+            
+            if (firebaseUser != null || isLocalLoggedIn) {
+                navGraph.setStartDestination(R.id.homeFragment)
+            } else {
+                navGraph.setStartDestination(R.id.authFragment)
+            }
+            navController.graph = navGraph
         }
-        navController.graph = navGraph
         
         binding.bottomNavigation.setupWithNavController(navController)
 

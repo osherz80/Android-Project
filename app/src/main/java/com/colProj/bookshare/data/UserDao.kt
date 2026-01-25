@@ -25,6 +25,9 @@ interface UserDao {
     @Query("UPDATE users SET isLoggedIn = 0")
     fun logoutAll()
 
+    @Query("DELETE FROM users WHERE uid = :uid")
+    fun deleteUserByUid(uid: String)
+
     @Query("DELETE FROM users")
     fun deleteAll()
 }

@@ -14,10 +14,10 @@ import com.colProj.bookshare.databinding.FragmentEditProfileBinding
 class EditProfileFragment : Fragment() {
 
     private var _binding: FragmentEditProfileBinding? = null
-    private val binding get() = _binding!!
+
 
     private val viewModel: ProfileViewModel by activityViewModels()
-    private var hasInjectedData = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,8 +50,8 @@ class EditProfileFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
-            android.util.Log.d("EditProfileFragment", "User observed: $user, hasInjectedData: $hasInjectedData")
-            if (!hasInjectedData) {
+            android.util.Log.d("EditProfileFragment", "User observed: $user, hasInjectedData: ${viewModel.hasInjectedData}")
+            if (!viewModel.hasInjectedData) {
                 user?.let { u ->
                     val initialName = u.displayName ?: u.email
                     val initialBio = if (u.bio.isNullOrBlank()) {
@@ -60,11 +60,13 @@ class EditProfileFragment : Fragment() {
                         u.bio
                     }
 
-                    binding.etEmail.setText(u.email)
-                    binding.etDisplayName.setText(initialName)
-                    binding.etBio.setText(initialBio)
+                    _binding?.apply {
+                        etEmail.setText(u.email)
+                        etDisplayName.setText(initialName)
+                        etBio.setText(initialBio)
+                    }
                     
-                    hasInjectedData = true
+                    viewModel.hasInjectedData = true
                     android.util.Log.d("EditProfileFragment", "Data injected: name=$initialName, bio=$initialBio")
                 }
             }

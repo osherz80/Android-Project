@@ -23,6 +23,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     fun clearImageStatus() { _imageUpdateStatus.value = null }
     fun clearProfileStatus() { _profileUpdateStatus.value = null }
 
+    var hasInjectedData = false
+
     fun fetchUser() {
         authRepository.getLoggedInUser { user ->
             android.util.Log.d("ProfileViewModel", "Fetched local user: $user")

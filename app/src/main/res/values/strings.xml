@@ -44,4 +44,8 @@
     <string name="search_coming_soon">Search Screen Coming Soon</string>
     <string name="my_books_coming_soon">My Books Screen Coming Soon</string>
     <string name="welcome_msg">Welcome to BookShare!</string>
+    <string name="cd_back">Navigate back</string>
+    <string name="cd_logout">Log out</string>
+    <string name="cd_profile_image">Profile picture</string>
+    <string name="cd_edit_image">Edit profile picture</string>
 </resources>
