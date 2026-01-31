@@ -77,6 +77,10 @@ dependencies {
     // Google ID Token library
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
+    // Glide
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
