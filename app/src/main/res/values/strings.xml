@@ -40,6 +40,27 @@
     <string name="display_name_hint">Display Name</string>
     <string name="bio_hint">Tell us about yourself...</string>
 
+    <!-- Add Recommendation Screen -->
+    <string name="new_recommendation">New Recommendation</string>
+    <string name="book_cover">Book Cover</string>
+    <string name="tap_to_upload_image">Tap to upload an image of the book</string>
+    <string name="add_image">Add Image</string>
+    <string name="book_title">Book Title</string>
+    <string name="enter_book_title">Enter the book title</string>
+    <string name="book_author">Book Author</string>
+    <string name="enter_book_author">Enter the book author</string>
+    <string name="your_rating">Your Rating</string>
+    <string name="not_for_me">Not for me</string>
+    <string name="masterpiece">Masterpiece</string>
+    <string name="recommendation">Recommendation</string>
+    <string name="recommendation_hint">Why did you love this book? Share your thoughts on the plot,
+        characters, and writing style…</string>
+    <string name="publish_recommendation">Publish Recommendation</string>
+    <string name="recommendation_saved">Recommendation published successfully!</string>
+    <string name="recommendation_save_error">Failed to publish recommendation</string>
+    <string name="fill_all_fields">Please fill in all required fields</string>
+    <string name="select_rating">Please select a rating</string>
+
     <!-- Other Screens -->
     <string name="search_coming_soon">Search Screen Coming Soon</string>
     <string name="my_books_coming_soon">My Books Screen Coming Soon</string>
@@ -48,4 +69,6 @@
     <string name="cd_logout">Log out</string>
     <string name="cd_profile_image">Profile picture</string>
     <string name="cd_edit_image">Edit profile picture</string>
+    <string name="cd_book_cover">Book cover image</string>
+    <string name="cd_camera_icon">Camera icon</string>
 </resources>

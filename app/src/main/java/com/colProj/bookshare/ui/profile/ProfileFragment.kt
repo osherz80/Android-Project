@@ -76,6 +76,10 @@ class ProfileFragment : Fragment() {
             statPosts.setOnClickListener {
                 findNavController().navigate(R.id.action_profileFragment_to_myPostsFragment)
             }
+
+            itemNewRecommendation.setOnClickListener {
+                findNavController().navigate(R.id.action_profileFragment_to_addRecommendationFragment)
+            }
         }
 
         viewModel.fetchUser()
