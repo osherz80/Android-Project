@@ -71,4 +71,8 @@
     <string name="cd_edit_image">Edit profile picture</string>
     <string name="cd_book_cover">Book cover image</string>
     <string name="cd_camera_icon">Camera icon</string>
+    <string name="select_image_source">Select Image Source</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="cancel">Cancel</string>
 </resources>

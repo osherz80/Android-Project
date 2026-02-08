@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,6 +20,8 @@ import com.colProj.bookshare.R
 import com.colProj.bookshare.databinding.FragmentAddRecommendationBinding
 import com.colProj.bookshare.utils.Resource
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.io.File
 
 class AddRecommendationFragment : Fragment() {
 
@@ -26,20 +29,56 @@ class AddRecommendationFragment : Fragment() {
     private val viewModel: AddRecommendationViewModel by viewModels()
 
     private var selectedRating = 0
+    private var tempImageUri: Uri? = null
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            try {
-                // Persistent permissions for local URIs
-                val flag = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-                requireContext().contentResolver.takePersistableUriPermission(uri, flag)
-            } catch (e: Exception) {
-                Log.e("AddRecommendation", "Failed to take persistable permission", e)
-            }
-            viewModel.setSelectedImageUri(uri)
-        } else {
-            Log.d("AddRecommendation", "No media selected")
+        uri?.let {
+            handleImageUri(it)
         }
+    }
+
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            tempImageUri?.let {
+                handleImageUri(it)
+            }
+        }
+    }
+
+    private fun handleImageUri(uri: Uri) {
+        try {
+            // Persistent permissions for local URIs
+            val flag = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            requireContext().contentResolver.takePersistableUriPermission(uri, flag)
+        } catch (e: Exception) {
+            Log.e("AddRecommendation", "Failed to take persistable permission", e)
+        }
+        viewModel.setSelectedImageUri(uri)
+    }
+
+    private fun showImageSourceDialog() {
+        val options = arrayOf(getString(R.string.camera), getString(R.string.gallery))
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.select_image_source)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openCamera() {
+        val imageFile = File(requireContext().cacheDir, "temp_book_cover_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            imageFile
+        )
+        tempImageUri = uri
+        takePicture.launch(uri)
     }
 
     override fun onCreateView(
@@ -65,11 +104,11 @@ class AddRecommendationFragment : Fragment() {
             }
 
             btnAddImage.setOnClickListener {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                showImageSourceDialog()
             }
 
             cardBookCover.setOnClickListener {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                showImageSourceDialog()
             }
 
             btnPublish.setOnClickListener {
