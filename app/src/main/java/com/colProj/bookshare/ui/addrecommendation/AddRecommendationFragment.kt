@@ -167,7 +167,7 @@ class AddRecommendationFragment : Fragment() {
                         .load(uri)
                         .centerCrop()
                         .into(ivBookCover)
-                    btnAddImage.text = getString(R.string.cd_edit_image)
+                    btnAddImage.text = getString(R.string.edit_book_cover)
                 } else {
                     ivBookCover.isVisible = false
                     layoutUploadPlaceholder.isVisible = true

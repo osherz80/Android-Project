@@ -60,6 +60,7 @@
     <string name="recommendation_save_error">Failed to publish recommendation</string>
     <string name="fill_all_fields">Please fill in all required fields</string>
     <string name="select_rating">Please select a rating</string>
+    <string name="edit_book_cover">Edit Book Cover</string>
 
     <!-- Other Screens -->
     <string name="search_coming_soon">Search Screen Coming Soon</string>
