@@ -9,7 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.colProj.bookshare.databinding.ActivityMainBinding
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             val screensWithNav = setOf(
                 R.id.homeFragment,
                 R.id.searchFragment,
-                R.id.booksFragment,
+                R.id.addBookFragment,
                 R.id.profileFragment
             )
 
