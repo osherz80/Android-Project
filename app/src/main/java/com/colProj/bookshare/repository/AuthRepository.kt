@@ -18,43 +18,54 @@ class AuthRepository private constructor(context: Context) {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     fun registerLocal(email: String, pass: String, onResult: (Boolean, String?) -> Unit) {
-        executor.execute {
-            try {
-                val existing = userDao.getUserByEmail(email)
-                if (existing != null) {
-                    mainHandler.post { onResult(false, "User already exists") }
-                    return@execute
+        auth.createUserWithEmailAndPassword(email, pass)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    if (firebaseUser != null) {
+                        val newUser = User(
+                            uid = firebaseUser.uid,
+                            email = email,
+                            password = pass, // Ideally verify if we want to store password locally. For now keeping consistent.
+                            isLoggedIn = true
+                        )
+                        executor.execute {
+                            userDao.insertUser(newUser)
+                            mainHandler.post { onResult(true, null) }
+                        }
+                    } else {
+                        onResult(false, "Registration success but user is null")
+                    }
+                } else {
+                    onResult(false, task.exception?.message ?: "Registration failed")
                 }
-
-                val newUser = User(
-                    uid = UUID.randomUUID().toString(),
-                    email = email,
-                    password = pass,
-                    isLoggedIn = true
-                )
-                userDao.insertUser(newUser)
-                mainHandler.post { onResult(true, null) }
-            } catch (e: Exception) {
-                mainHandler.post { onResult(false, e.message) }
             }
-        }
     }
 
     fun loginLocal(email: String, pass: String, onResult: (Boolean, String?) -> Unit) {
-        executor.execute {
-            try {
-                val user = userDao.loginLocal(email, pass)
-                if (user != null) {
-                    userDao.logoutAll()
-                    userDao.updateUser(user.copy(isLoggedIn = true))
-                    mainHandler.post { onResult(true, null) }
+        auth.signInWithEmailAndPassword(email, pass)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    if (firebaseUser != null) {
+                        executor.execute {
+                            // Update local generic user state if needed, or just sync
+                            val existingUser = userDao.getUserByEmail(email) ?: User(
+                                uid = firebaseUser.uid,
+                                email = email,
+                                isLoggedIn = true
+                            )
+                            userDao.logoutAll()
+                            userDao.insertUser(existingUser.copy(isLoggedIn = true, uid = firebaseUser.uid))
+                            mainHandler.post { onResult(true, null) }
+                        }
+                    } else {
+                        onResult(false, "Login success but user is null")
+                    }
                 } else {
-                    mainHandler.post { onResult(false, "Invalid email or password") }
+                    onResult(false, task.exception?.message ?: "Login failed")
                 }
-            } catch (e: Exception) {
-                mainHandler.post { onResult(false, e.message) }
             }
-        }
     }
 
     fun hasLoggedInUser(onResult: (Boolean) -> Unit) {
@@ -77,7 +88,7 @@ class AuthRepository private constructor(context: Context) {
                                 // Try to find existing user by UID or Email
                                 val existingByUid = userDao.getUserByUid(firebaseUser.uid)
                                 val existingByEmail = userDao.getUserByEmail(email)
-                                
+
                                 val existingToMerge = existingByUid ?: existingByEmail
 
                                 android.util.Log.d("AuthRepository", "Merging user: googleUid=${firebaseUser.uid}, existingFound=${existingToMerge != null}")
@@ -91,9 +102,9 @@ class AuthRepository private constructor(context: Context) {
                                     bio = existingToMerge?.bio,
                                     isLoggedIn = true
                                 )
-                                
+
                                 userDao.logoutAll()
-                                
+
                                 // If we found an existing record with a DIFFERENT UID (local user becoming Google user)
                                 // delete the old record to avoid duplicates of the same email
                                 if (existingByEmail != null && existingByEmail.uid != firebaseUser.uid) {
@@ -146,13 +157,13 @@ class AuthRepository private constructor(context: Context) {
                 try {
                     val email = firebaseUser.email ?: ""
                     var user = userDao.getLoggedInUser()
-                    
+
                     if (user == null || user.uid != firebaseUser.uid) {
                         // Try to find existing user by UID or Email to restore bio/photo
                         val existingByUid = userDao.getUserByUid(firebaseUser.uid)
                         val existingByEmail = userDao.getUserByEmail(email)
                         val existingToMerge = existingByUid ?: existingByEmail
-                        
+
                         user = User(
                             uid = firebaseUser.uid,
                             email = email,
@@ -162,12 +173,12 @@ class AuthRepository private constructor(context: Context) {
                             isLoggedIn = true
                         )
                         userDao.logoutAll()
-                        
+
                         // Deduplicate if needed
                         if (existingByEmail != null && existingByEmail.uid != firebaseUser.uid) {
                             userDao.deleteUserByUid(existingByEmail.uid)
                         }
-                        
+
                         userDao.insertUser(user)
                     }
                     mainHandler.post { onComplete(user) }
@@ -181,17 +192,46 @@ class AuthRepository private constructor(context: Context) {
     }
 
     fun updateProfile(uid: String, displayName: String, bio: String, onResult: (Boolean) -> Unit) {
-        executor.execute {
-            try {
-                val user = userDao.getLoggedInUser()
-                if (user != null && user.uid == uid) {
-                    userDao.updateUser(user.copy(displayName = displayName, bio = bio))
-                    mainHandler.post { onResult(true) }
-                } else {
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null && firebaseUser.uid == uid) {
+            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .build()
+
+            firebaseUser.updateProfile(profileUpdates)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        executor.execute {
+                            try {
+                                val user = userDao.getLoggedInUser()
+                                if (user != null && user.uid == uid) {
+                                    userDao.updateUser(user.copy(displayName = displayName, bio = bio))
+                                    mainHandler.post { onResult(true) }
+                                } else {
+                                    mainHandler.post { onResult(false) }
+                                }
+                            } catch (e: Exception) {
+                                mainHandler.post { onResult(false) }
+                            }
+                        }
+                    } else {
+                        onResult(false)
+                    }
+                }
+        } else {
+            // Fallback to local only if firebase user is missing (should generally not happen if logged in)
+            executor.execute {
+                try {
+                    val user = userDao.getLoggedInUser()
+                    if (user != null && user.uid == uid) {
+                        userDao.updateUser(user.copy(displayName = displayName, bio = bio))
+                        mainHandler.post { onResult(true) }
+                    } else {
+                        mainHandler.post { onResult(false) }
+                    }
+                } catch (e: Exception) {
                     mainHandler.post { onResult(false) }
                 }
-            } catch (e: Exception) {
-                mainHandler.post { onResult(false) }
             }
         }
     }
