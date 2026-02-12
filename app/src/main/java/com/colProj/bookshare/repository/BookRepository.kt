@@ -19,6 +19,30 @@ class BookRepository(context: Context) {
     private val auth = FirebaseAuth.getInstance()
     private val postsCollection = firestore.collection("posts")
 
+    val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
+
+    fun searchPosts(query: String): LiveData<List<Post>> {
+        return postDao.searchPosts(query)
+    }
+
+    suspend fun refreshPosts(): Resource<Unit> {
+        return try {
+            val snapshot = postsCollection
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .await()
+            val posts = snapshot.toObjects(Post::class.java)
+
+            withContext(Dispatchers.IO) {
+                postDao.clearAllPosts()
+                postDao.insertPosts(posts)
+            }
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to fetch posts")
+        }
+    }
+
     suspend fun addPost(post: Post): Resource<Unit> {
         return try {
             val document = postsCollection.document()
