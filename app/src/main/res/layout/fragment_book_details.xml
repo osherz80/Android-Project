@@ -19,7 +19,6 @@
             app:navigationIcon="@drawable/ic_back_arrow" 
             app:title=""
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
-            <!-- Note: Ensure ic_back_arrow exists or use standard abc_ic_ab_back_material -->
 
     </com.google.android.material.appbar.AppBarLayout>
 
