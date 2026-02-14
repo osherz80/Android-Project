@@ -100,6 +100,10 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        viewModel.userPostsCount.observe(viewLifecycleOwner) { count ->
+            _binding?.tvPostsCount?.text = count.toString()
+        }
+
         viewModel.imageUpdateStatus.observe(viewLifecycleOwner) { success ->
             success?.let {
                 if (it) {
