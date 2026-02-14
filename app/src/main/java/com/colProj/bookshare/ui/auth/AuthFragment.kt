@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.credentials.CustomCredential
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -102,7 +103,7 @@ class AuthFragment : Fragment() {
         }
     }
 
-    private fun handleSignIn(result: androidx.credentials.GetCredentialResponse) {
+    private fun handleSignIn(result: GetCredentialResponse) {
         when (val credential = result.credential) {
             is GoogleIdTokenCredential -> {
                 viewModel.handleGoogleIdToken(credential.idToken)

@@ -1,12 +1,12 @@
 package com.colProj.bookshare.ui.details
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.colProj.bookshare.R
 import com.colProj.bookshare.data.model.Post
 import com.colProj.bookshare.databinding.FragmentBookDetailsBinding
+import com.colProj.bookshare.databinding.ItemRatingProgressBinding
 import com.colProj.bookshare.ui.search.PostsAdapter
 
 class BookDetailsFragment : Fragment() {
@@ -43,7 +44,7 @@ class BookDetailsFragment : Fragment() {
         _binding?.tvDetailTitle?.text = args.bookTitle
         _binding?.tvDetailAuthor?.text = args.author
         _binding?.tvDescription?.text = args.bookSummary
-        _binding?.tvDescription?.movementMethod = android.text.method.ScrollingMovementMethod()
+        _binding?.tvDescription?.movementMethod = ScrollingMovementMethod()
         
         // Handle nested scroll inside NestedScrollView
         _binding?.tvDescription?.setOnTouchListener { v, event ->
@@ -148,14 +149,14 @@ class BookDetailsFragment : Fragment() {
         updateProgressBar(_binding?.progress0, "0", counts[0], max)
     }
     
-    private fun updateProgressBar(itemBinding: com.colProj.bookshare.databinding.ItemRatingProgressBinding?, label: String, count: Int, max: Int) {
+    private fun updateProgressBar(itemBinding: ItemRatingProgressBinding?, label: String, count: Int, max: Int) {
         itemBinding?.tvStarLabel?.text = label
         itemBinding?.progressBar?.max = max
         itemBinding?.progressBar?.progress = count
         itemBinding?.tvRatingCount?.text = count.toString()
     }
     
-    private fun resetProgressBar(itemBinding: com.colProj.bookshare.databinding.ItemRatingProgressBinding?, label: String) {
+    private fun resetProgressBar(itemBinding: ItemRatingProgressBinding?, label: String) {
         itemBinding?.tvStarLabel?.text = label
         itemBinding?.progressBar?.progress = 0
         itemBinding?.tvRatingCount?.text = "0"

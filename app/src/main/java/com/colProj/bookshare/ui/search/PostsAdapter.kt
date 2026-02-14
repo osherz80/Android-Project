@@ -1,9 +1,8 @@
 package com.colProj.bookshare.ui.search
 
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.colProj.bookshare.R
 import com.colProj.bookshare.data.model.Post
@@ -34,7 +33,7 @@ class PostsAdapter : RecyclerView.Adapter<PostViewHolder>() {
         holder.author.text = if (post.author.isNotEmpty()) "by ${post.author}"
                              else "Unknown Author"
         holder.description.text = post.description
-        holder.description.movementMethod = android.text.method.ScrollingMovementMethod()
+        holder.description.movementMethod = ScrollingMovementMethod()
         
         // Handle nested scroll inside RecyclerView
         holder.description.setOnTouchListener { v, event ->

@@ -3,11 +3,11 @@ package com.colProj.bookshare.repository
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.colProj.bookshare.data.AppDatabase
 import com.colProj.bookshare.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import java.util.*
 import java.util.concurrent.Executors
 
 class AuthRepository private constructor(context: Context) {
@@ -91,7 +91,7 @@ class AuthRepository private constructor(context: Context) {
 
                                 val existingToMerge = existingByUid ?: existingByEmail
 
-                                android.util.Log.d("AuthRepository", "Merging user: googleUid=${firebaseUser.uid}, existingFound=${existingToMerge != null}")
+                                Log.d("AuthRepository", "Merging user: googleUid=${firebaseUser.uid}, existingFound=${existingToMerge != null}")
 
                                 val user = User(
                                     uid = firebaseUser.uid,
@@ -109,7 +109,7 @@ class AuthRepository private constructor(context: Context) {
                                 // delete the old record to avoid duplicates of the same email
                                 if (existingByEmail != null && existingByEmail.uid != firebaseUser.uid) {
                                     userDao.deleteUserByUid(existingByEmail.uid)
-                                    android.util.Log.d("AuthRepository", "Deleted older local record for email: $email")
+                                    Log.d("AuthRepository", "Deleted older local record for email: $email")
                                 }
 
                                 userDao.insertUser(user)
