@@ -3,7 +3,9 @@ package com.colProj.bookshare.repository
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.colProj.bookshare.data.AppDatabase
+import com.colProj.bookshare.data.model.GoogleBookItem
 import com.colProj.bookshare.data.model.Post
+import com.colProj.bookshare.data.remote.RetrofitClient
 import com.colProj.bookshare.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,7 +24,6 @@ class BookRepository(context: Context) {
     val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
 
     fun getUserPosts(userId: String): LiveData<List<Post>> {
-        android.util.Log.d("BookRepository", "getUserPosts called for userId: '$userId'")
         return postDao.getUserPosts(userId)
     }
 
@@ -52,6 +53,27 @@ class BookRepository(context: Context) {
         }
     }
 
+    suspend fun refreshUserPosts(userId: String): Resource<Unit> {
+         return try {
+             val snapshot = postsCollection
+                 .whereEqualTo("userId", userId)
+                 .get()
+                 .await()
+             val posts = snapshot.toObjects(Post::class.java)
+             // The query above doesn't support ordering by default without a composite index.
+             // We can sort in memory since the user's post count shouldn't be massive.
+             val sortedPosts = posts.sortedByDescending { it.timestamp }
+
+             withContext(Dispatchers.IO) {
+                 postDao.deleteUserPosts(userId)
+                 postDao.insertPosts(sortedPosts)
+             }
+             Resource.Success(Unit)
+         } catch (e: Exception) {
+             Resource.Error(e.message ?: "Failed to fetch user posts")
+         }
+    }
+
     suspend fun addPost(post: Post): Resource<Unit> {
         return try {
             val document = postsCollection.document()
@@ -66,7 +88,6 @@ class BookRepository(context: Context) {
             }
             Resource.Success(Unit)
         } catch (e: Exception) {
-            android.util.Log.e("BookRepository", "addPost: Failed to save post", e)
             Resource.Error(e.message ?: "Failed to add post")
         }
     }
@@ -75,12 +96,10 @@ class BookRepository(context: Context) {
 
     suspend fun getCurrentUserId(): String? {
         val firebaseUid = auth.currentUser?.uid
-        android.util.Log.d("BookRepository", "getCurrentUserId: firebaseUid=$firebaseUid")
         if (firebaseUid != null) return firebaseUid
 
         return withContext(Dispatchers.IO) {
             val localUid = userDao.getLoggedInUser()?.uid
-            android.util.Log.d("BookRepository", "getCurrentUserId: localUid=$localUid")
             localUid
         }
     }
@@ -94,7 +113,7 @@ class BookRepository(context: Context) {
         }
     }
     
-    suspend fun searchBooks(query: String): Resource<List<com.colProj.bookshare.data.model.GoogleBookItem>> {
+    suspend fun searchBooks(query: String): Resource<List<GoogleBookItem>> {
         return try {
             // Note: API Key should be in BuildConfig.GOOGLE_BOOKS_API_KEY if configured
             // Since we can't easily access BuildConfig here without import, we'll try to find it or pass null
@@ -113,7 +132,7 @@ class BookRepository(context: Context) {
                 null
             }
 
-            val response = com.colProj.bookshare.data.remote.RetrofitClient.instance.searchBooks(query, apiKey)
+            val response = RetrofitClient.instance.searchBooks(query, apiKey)
             Resource.Success(response.items ?: emptyList())
         } catch (e: retrofit2.HttpException) {
              if (e.code() == 429) {
