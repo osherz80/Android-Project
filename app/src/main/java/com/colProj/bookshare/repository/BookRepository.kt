@@ -21,6 +21,15 @@ class BookRepository(context: Context) {
 
     val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
 
+    fun getUserPosts(userId: String): LiveData<List<Post>> {
+        android.util.Log.d("BookRepository", "getUserPosts called for userId: '$userId'")
+        return postDao.getUserPosts(userId)
+    }
+
+    fun getPostsByTitle(title: String): LiveData<List<Post>> {
+        return postDao.getPostsByTitle(title)
+    }
+
     fun searchPosts(query: String): LiveData<List<Post>> {
         return postDao.searchPosts(query)
     }
