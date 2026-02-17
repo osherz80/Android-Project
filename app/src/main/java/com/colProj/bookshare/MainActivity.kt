@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.colProj.bookshare.databinding.ActivityMainBinding
 import com.colProj.bookshare.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         AuthRepository.getInstance(this).hasLoggedInUser { isLocalLoggedIn ->
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-            
+
             if (firebaseUser != null || isLocalLoggedIn) {
                 navGraph.setStartDestination(R.id.homeFragment)
             } else {
@@ -57,17 +57,17 @@ class MainActivity : AppCompatActivity() {
             }
             navController.graph = navGraph
         }
-        
+
         binding.bottomNavigation.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val screensWithNav = setOf(
                 R.id.homeFragment,
                 R.id.searchFragment,
-                R.id.booksFragment,
+                R.id.addBookFragment,
                 R.id.profileFragment
             )
-            
+
             if (destination.id in screensWithNav) {
                 binding.bottomNavigation.visibility = View.VISIBLE
             } else {
