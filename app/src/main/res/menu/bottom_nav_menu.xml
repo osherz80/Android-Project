@@ -9,9 +9,9 @@
         android:icon="@drawable/ic_search"
         android:title="Search" />
     <item
-        android:id="@+id/booksFragment"
-        android:icon="@drawable/ic_book"
-        android:title="My Books" />
+        android:id="@+id/addBookFragment"
+        android:title="Add Book"
+        android:icon="@android:drawable/ic_menu_add" />
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_person"
