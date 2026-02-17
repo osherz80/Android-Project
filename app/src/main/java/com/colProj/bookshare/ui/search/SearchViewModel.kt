@@ -16,7 +16,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     private val repository = BookRepository(application)
     
-    private val _searchQuery = MutableLiveData<String>("")
+    private val _searchQuery = MutableLiveData("")
     
     val posts: LiveData<List<Post>> = _searchQuery.switchMap { query ->
         if (query.isNullOrBlank()) {

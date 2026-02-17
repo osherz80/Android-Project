@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.colProj.bookshare.data.model.GoogleBookItem
 import com.colProj.bookshare.data.model.Post
 import com.colProj.bookshare.repository.BookRepository
 import com.colProj.bookshare.utils.Resource
@@ -15,7 +16,7 @@ class AddBookViewModel(application: Application) : AndroidViewModel(application)
     private val repository = BookRepository(application)
 
     private val _addPostStatus = MutableLiveData<Resource<Unit>>()
-    private val _searchResults = MutableLiveData<Resource<List<com.colProj.bookshare.data.model.GoogleBookItem>>>()
+    private val _searchResults = MutableLiveData<Resource<List<GoogleBookItem>>>()
 
     val addPostStatus: LiveData<Resource<Unit>> = _addPostStatus
 
@@ -48,7 +49,7 @@ class AddBookViewModel(application: Application) : AndroidViewModel(application)
         }
     }
     
-    val searchResults: LiveData<Resource<List<com.colProj.bookshare.data.model.GoogleBookItem>>> = _searchResults
+    val searchResults: LiveData<Resource<List<GoogleBookItem>>> = _searchResults
 
     fun searchBooks(query: String) {
         _searchResults.value = Resource.Loading()

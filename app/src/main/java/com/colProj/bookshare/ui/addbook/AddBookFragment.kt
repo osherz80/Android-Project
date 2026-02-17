@@ -1,11 +1,19 @@
 package com.colProj.bookshare.ui.addbook
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.RatingBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,8 +23,12 @@ import com.colProj.bookshare.utils.Resource
 import com.google.android.material.textfield.TextInputEditText
 
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.colProj.bookshare.utils.StatusResource
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
 class AddBookFragment : Fragment() {
@@ -45,10 +57,10 @@ class AddBookFragment : Fragment() {
         val btnSave = view.findViewById<Button>(R.id.btnSave)
 
         // Search items
-        val tilSearch = view.findViewById<com.google.android.material.textfield.TextInputLayout>(R.id.tilSearch)
+        val tilSearch = view.findViewById<TextInputLayout>(R.id.tilSearch)
         val etSearch = view.findViewById<TextInputEditText>(R.id.etSearchQuery)
-        val rvSearch = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvSearchResults)
-        val ivBookCover = view.findViewById<android.widget.ImageView>(R.id.ivBookCover)
+        val rvSearch = view.findViewById<RecyclerView>(R.id.rvSearchResults)
+        val ivBookCover = view.findViewById<ImageView>(R.id.ivBookCover)
 
         // Make Book Summary Read-Only but Scrollable
         etBookSummary.keyListener = null // Disable typing
@@ -80,14 +92,14 @@ class AddBookFragment : Fragment() {
             }
 
             // Hide Search UI
-            view.findViewById<android.widget.TextView>(R.id.etSearchQuery)?.visibility = View.GONE // If exists, otherwise just hide input
+            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE // If exists, otherwise just hide input
             tilSearch.visibility = View.GONE
             rvSearch.visibility = View.GONE
 
             btnSave.text = "Submit Review"
         }
 
-        rvSearch.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        rvSearch.layoutManager = LinearLayoutManager(context)
         val adapter = SearchResultsAdapter { book ->
              etTitle.setText(book.volumeInfo.title)
              etBookSummary.setText(book.volumeInfo.description)
@@ -115,10 +127,10 @@ class AddBookFragment : Fragment() {
 
         // Instant Search with Debounce
         var searchJob: kotlinx.coroutines.Job? = null
-        etSearch.addTextChangedListener(object : android.text.TextWatcher {
+        etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
+            override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
                     kotlinx.coroutines.delay(1000) // 1000ms debounce to prevent hitting API limits
@@ -137,7 +149,7 @@ class AddBookFragment : Fragment() {
         }
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 searchJob?.cancel()
                 performSearch(etSearch.text.toString())
                 true
@@ -171,11 +183,11 @@ class AddBookFragment : Fragment() {
         viewModel.addPostStatus.observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 StatusResource.SUCCESS -> {
-                    view.findViewById<android.widget.ProgressBar>(R.id.progressBar).visibility = View.GONE
+                    view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
                     btnSave.isEnabled = true
                     Toast.makeText(context, "Post Added!", Toast.LENGTH_SHORT).show()
 
-                    val navOptions = androidx.navigation.NavOptions.Builder()
+                    val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.addBookFragment, true)
                         .setLaunchSingleTop(true)
                         .build()
@@ -184,12 +196,12 @@ class AddBookFragment : Fragment() {
                     findNavController().navigate(R.id.searchFragment, null, navOptions)
                 }
                 StatusResource.ERROR -> {
-                    view.findViewById<android.widget.ProgressBar>(R.id.progressBar).visibility = View.GONE
+                    view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
                     btnSave.isEnabled = true
                     Toast.makeText(context, resource.message, Toast.LENGTH_LONG).show()
                 }
                 StatusResource.LOADING -> {
-                    view.findViewById<android.widget.ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
+                    view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
                     btnSave.isEnabled = false
                 }
             }
@@ -211,11 +223,11 @@ class AddBookFragment : Fragment() {
 
     // Helper to enable scrolling inside EditText within ScrollView
     fun alignScroll(editText: TextInputEditText) {
-        editText.movementMethod = android.text.method.ScrollingMovementMethod()
+        editText.movementMethod = ScrollingMovementMethod()
         editText.setOnTouchListener { v, event ->
             v.parent.requestDisallowInterceptTouchEvent(true)
-            when (event.action and android.view.MotionEvent.ACTION_MASK) {
-                android.view.MotionEvent.ACTION_UP -> v.parent.requestDisallowInterceptTouchEvent(false)
+            when (event.action and MotionEvent.ACTION_MASK) {
+                MotionEvent.ACTION_UP -> v.parent.requestDisallowInterceptTouchEvent(false)
             }
             false
         }
