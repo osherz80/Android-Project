@@ -35,24 +35,6 @@ class BookRepository(context: Context) {
         return postDao.searchPosts(query)
     }
 
-    suspend fun refreshPosts(): Resource<Unit> {
-        return try {
-            val snapshot = postsCollection
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
-                .await()
-            val posts = snapshot.toObjects(Post::class.java)
-
-            withContext(Dispatchers.IO) {
-                postDao.clearAllPosts()
-                postDao.insertPosts(posts)
-            }
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Failed to fetch posts")
-        }
-    }
-
     suspend fun refreshUserPosts(userId: String): Resource<Unit> {
          return try {
              val snapshot = postsCollection
