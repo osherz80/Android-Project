@@ -29,17 +29,5 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
-    
-    private val _refreshStatus = MutableLiveData<Resource<Unit>>()
 
-    init {
-        refreshPosts()
-    }
-
-    fun refreshPosts() {
-        _refreshStatus.value = Resource.Loading()
-        viewModelScope.launch {
-            _refreshStatus.value = repository.refreshPosts()
-        }
-    }
 }
