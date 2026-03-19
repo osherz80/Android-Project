@@ -208,7 +208,7 @@ class AddBookFragment : Fragment() {
                         .build()
 
 
-                    findNavController().navigate(R.id.searchFragment, null, navOptions)
+                    findNavController().navigate(R.id.homeFragment, null, navOptions)
                 }
                 StatusResource.ERROR -> {
                     view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
