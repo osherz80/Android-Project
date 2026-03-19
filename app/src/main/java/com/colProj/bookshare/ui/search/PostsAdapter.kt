@@ -22,6 +22,7 @@ class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView
 
     private var onItemClick: ((Post) -> Unit)? = null
     var onDeleteClick: ((Post) -> Unit)? = null
+    var onEditClick: ((Post) -> Unit)? = null
 
     fun setOnItemClickListener(listener: (Post) -> Unit) {
         onItemClick = listener
@@ -39,6 +40,11 @@ class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView
         holder.btnDelete.visibility = if (showDeleteButton) android.view.View.VISIBLE else android.view.View.GONE
         holder.btnDelete.setOnClickListener {
             onDeleteClick?.invoke(post)
+        }
+
+        holder.btnEdit.visibility = if (showDeleteButton) android.view.View.VISIBLE else android.view.View.GONE
+        holder.btnEdit.setOnClickListener {
+            onEditClick?.invoke(post)
         }
         
         // Handle nested scroll inside RecyclerView

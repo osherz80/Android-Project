@@ -95,7 +95,7 @@ class BookRepository(context: Context) {
 
     suspend fun addPost(post: Post): Resource<Unit> {
         return try {
-            val document = postsCollection.document()
+            val document = if (post.id.isNotEmpty()) postsCollection.document(post.id) else postsCollection.document()
             val newPost = post.copy(id = document.id)
             
             // 1. Firestore (Async operation)

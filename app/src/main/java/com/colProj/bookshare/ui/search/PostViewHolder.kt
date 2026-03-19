@@ -13,4 +13,5 @@ class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ratingBar: android.widget.RatingBar = itemView.findViewById(R.id.rbRating)
         val bookCover: android.widget.ImageView = itemView.findViewById(R.id.ivBookCover)
         val btnDelete: android.widget.ImageButton = itemView.findViewById(R.id.btnDelete)
+        val btnEdit: android.widget.ImageButton = itemView.findViewById(R.id.btnEdit)
 }

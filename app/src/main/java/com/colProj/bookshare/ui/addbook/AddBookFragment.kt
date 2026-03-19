@@ -67,7 +67,48 @@ class AddBookFragment : Fragment() {
         alignScroll(etBookSummary)
         alignScroll(etRecommendation)
 
-        if (!args.bookTitle.isNullOrEmpty()) {
+        if (!args.postId.isNullOrEmpty()) {
+            // EDIT MODE
+            etTitle.setText(args.bookTitle)
+            etTitle.isEnabled = false
+
+            etAuthor.setText(args.author)
+            etAuthor.isEnabled = false
+
+            etBookSummary.setText(args.bookSummary)
+            etBookSummary.isEnabled = false
+
+            etImage.setText(args.imageUrl)
+            etImage.isEnabled = false
+            
+            etRecommendation.setText(args.bookSummary) // Wait, summary vs recommendation? 
+            // Actually in MyPostsFragment: bookSummary = post.description
+            // So args.bookSummary is actually the recommendation.
+            // Let's check MyPostsFragment mapping...
+            
+            // Re-evaluating args mapping from MyPostsFragment:
+            // bookTitle = post.bookTitle,
+            // author = post.author,
+            // imageUrl = post.imageUrl,
+            // bookSummary = post.description (This is the recommendation!)
+            
+            etRecommendation.setText(args.bookSummary)
+            ratingBar.rating = args.rating
+
+            if (!args.imageUrl.isNullOrEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(args.imageUrl)
+                    .placeholder(R.color.input_bg)
+                    .into(ivBookCover)
+            }
+
+            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE
+            tilSearch.visibility = View.GONE
+            rvSearch.visibility = View.GONE
+
+            btnSave.text = "Update Post"
+        } else if (!args.bookTitle.isNullOrEmpty()) {
+            // ADD REVIEW MODE (from Book Details)
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -92,7 +133,8 @@ class AddBookFragment : Fragment() {
 
             btnSave.text = "Submit Review"
         } else {
-            // stub values for testing
+            // NEW POST MODE (from Scratch)
+            // ... (stub values code)
             etTitle.setText("The Great Gatsby")
             etAuthor.setText("F. Scott Fitzgerald")
             etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
@@ -100,14 +142,8 @@ class AddBookFragment : Fragment() {
             etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
             ratingBar.rating = 5f
 
-            // editable for test
             etTitle.isEnabled = true
-            etTitle.isFocusable = true
-            etTitle.isFocusableInTouchMode = true
-            
             etAuthor.isEnabled = true
-            etAuthor.isFocusable = true
-            etAuthor.isFocusableInTouchMode = true
 
             com.bumptech.glide.Glide.with(this)
                 .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
@@ -192,7 +228,7 @@ class AddBookFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author)
+            viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author, args.postId)
         }
 
         viewModel.addPostStatus.observe(viewLifecycleOwner) { resource ->
