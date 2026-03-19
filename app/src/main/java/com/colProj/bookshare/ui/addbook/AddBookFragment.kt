@@ -97,6 +97,29 @@ class AddBookFragment : Fragment() {
             rvSearch.visibility = View.GONE
 
             btnSave.text = "Submit Review"
+        } else {
+            // Add stub values for easier testing
+            etTitle.setText("The Great Gatsby")
+            etAuthor.setText("F. Scott Fitzgerald")
+            etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
+            etRecommendation.setText("An absolute classic! The prose is beautiful and the themes are timeless.")
+            etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
+            ratingBar.rating = 5f
+
+            // Make them editable for the stub test
+            etTitle.isEnabled = true
+            etTitle.isFocusable = true
+            etTitle.isFocusableInTouchMode = true
+            
+            etAuthor.isEnabled = true
+            etAuthor.isFocusable = true
+            etAuthor.isFocusableInTouchMode = true
+
+            // Load the stub image
+            com.bumptech.glide.Glide.with(this)
+                .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
+                .placeholder(R.color.input_bg)
+                .into(ivBookCover)
         }
 
         rvSearch.layoutManager = LinearLayoutManager(context)
