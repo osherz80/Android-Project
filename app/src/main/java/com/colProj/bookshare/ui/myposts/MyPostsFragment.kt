@@ -34,9 +34,13 @@ class MyPostsFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        adapter = PostsAdapter()
+        adapter = PostsAdapter(showDeleteButton = true)
         _binding?.rvMyPosts?.layoutManager = LinearLayoutManager(context)
         _binding?.rvMyPosts?.adapter = adapter
+
+        adapter.onDeleteClick = { post ->
+            viewModel.deletePost(post.id)
+        }
         
         adapter.setOnItemClickListener { post ->
             // Navigate to details if needed

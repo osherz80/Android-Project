@@ -106,6 +106,15 @@ class BookRepository(context: Context) {
             Resource.Error(e.message ?: "Failed to add post")
         }
     }
+
+    suspend fun deletePost(postId: String): Resource<Unit> {
+        return try {
+            postsCollection.document(postId).delete().await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to delete post")
+        }
+    }
     
     private val userDao = AppDatabase.getDatabase(context).userDao()
 
