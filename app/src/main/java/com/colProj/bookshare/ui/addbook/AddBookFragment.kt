@@ -56,21 +56,18 @@ class AddBookFragment : Fragment() {
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
         val btnSave = view.findViewById<Button>(R.id.btnSave)
 
-        // Search items
         val tilSearch = view.findViewById<TextInputLayout>(R.id.tilSearch)
         val etSearch = view.findViewById<TextInputEditText>(R.id.etSearchQuery)
         val rvSearch = view.findViewById<RecyclerView>(R.id.rvSearchResults)
         val ivBookCover = view.findViewById<ImageView>(R.id.ivBookCover)
 
-        // Make Book Summary Read-Only but Scrollable
-        etBookSummary.keyListener = null // Disable typing
+
+        etBookSummary.keyListener = null
 
         alignScroll(etBookSummary)
         alignScroll(etRecommendation)
 
-        // Handle Arguments for "Add Review" mode
         if (!args.bookTitle.isNullOrEmpty()) {
-            // Pre-fill and lock
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -78,12 +75,10 @@ class AddBookFragment : Fragment() {
             etAuthor.isEnabled = false
 
             etBookSummary.setText(args.bookSummary)
-            etBookSummary.isEnabled = false // Read-only but scrollable (handled by alignScroll)
+            etBookSummary.isEnabled = false
 
             etImage.setText(args.imageUrl)
-            etImage.isEnabled = false // Hide maybe? Or just lock.
-
-            // Load Image
+            etImage.isEnabled = false
             if (!args.imageUrl.isNullOrEmpty()) {
                 com.bumptech.glide.Glide.with(this)
                     .load(args.imageUrl)
@@ -91,14 +86,13 @@ class AddBookFragment : Fragment() {
                     .into(ivBookCover)
             }
 
-            // Hide Search UI
-            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE // If exists, otherwise just hide input
+            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE
             tilSearch.visibility = View.GONE
             rvSearch.visibility = View.GONE
 
             btnSave.text = "Submit Review"
         } else {
-            // Add stub values for easier testing
+            // stub values for testing
             etTitle.setText("The Great Gatsby")
             etAuthor.setText("F. Scott Fitzgerald")
             etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
@@ -106,7 +100,7 @@ class AddBookFragment : Fragment() {
             etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
             ratingBar.rating = 5f
 
-            // Make them editable for the stub test
+            // editable for test
             etTitle.isEnabled = true
             etTitle.isFocusable = true
             etTitle.isFocusableInTouchMode = true
@@ -115,7 +109,6 @@ class AddBookFragment : Fragment() {
             etAuthor.isFocusable = true
             etAuthor.isFocusableInTouchMode = true
 
-            // Load the stub image
             com.bumptech.glide.Glide.with(this)
                 .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
                 .placeholder(R.color.input_bg)
@@ -156,7 +149,7 @@ class AddBookFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                    kotlinx.coroutines.delay(1000) // 1000ms debounce to prevent hitting API limits
+                    kotlinx.coroutines.delay(1000) // 1000ms debounce
                     s?.toString()?.let { query ->
                         if (query.length > 2) {
                             performSearch(query)
@@ -199,7 +192,6 @@ class AddBookFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Pass separately: Book Summary is now distinct from User Recommendation
             viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author)
         }
 
@@ -244,7 +236,6 @@ class AddBookFragment : Fragment() {
         }
     }
 
-    // Helper to enable scrolling inside EditText within ScrollView
     fun alignScroll(editText: TextInputEditText) {
         editText.movementMethod = ScrollingMovementMethod()
         editText.setOnTouchListener { v, event ->
