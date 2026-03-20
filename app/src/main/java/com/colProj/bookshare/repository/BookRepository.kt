@@ -25,7 +25,6 @@ class BookRepository(context: Context) {
 
     init {
         val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
             .build()
         firestore.firestoreSettings = settings
     }
