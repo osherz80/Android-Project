@@ -58,10 +58,15 @@ class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView
         
         holder.ratingBar.rating = post.rating
         
-        val secureUrl = post.imageUrl.replace("http:", "https:")
-        if (secureUrl.isNotEmpty()) {
+        val imageToLoad = if (!post.localImagePath.isNullOrEmpty()) {
+            post.localImagePath
+        } else {
+            post.imageUrl.replace("http:", "https:")
+        }
+        
+        if (!imageToLoad.isNullOrEmpty()) {
             com.bumptech.glide.Glide.with(holder.itemView.context)
-                .load(secureUrl)
+                .load(imageToLoad)
                 .placeholder(R.color.input_bg)
                 .into(holder.bookCover)
         } else {

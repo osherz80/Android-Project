@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
             val action = HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment(
                 bookTitle = post.bookTitle,
                 author = post.author,
-                imageUrl = post.imageUrl,
+                imageUrl = post.localImagePath ?: post.imageUrl,
                 bookSummary = post.bookSummary
             )
             findNavController().navigate(action)

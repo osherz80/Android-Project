@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class BookRepository(context: Context) {
+class BookRepository(private val context: Context) {
 
     private val postDao = AppDatabase.getDatabase(context).postDao()
     private val firestore = FirebaseFirestore.getInstance()
@@ -47,7 +47,17 @@ class BookRepository(context: Context) {
         return try {
             val snapshot = postsCollection.get().await()
             val fetchedPosts = snapshot.toObjects(Post::class.java)
-            postDao.insertPosts(fetchedPosts)
+            
+            val updatedPosts = fetchedPosts.map { post ->
+                if (post.imageUrl.isNotBlank() && post.localImagePath.isNullOrBlank()) {
+                    val localPath = com.colProj.bookshare.utils.ImageCacheManager.downloadAndCacheImage(context, post.imageUrl, post.id)
+                    post.copy(localImagePath = localPath)
+                } else {
+                    post
+                }
+            }
+            
+            postDao.insertPosts(updatedPosts)
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to sync posts")

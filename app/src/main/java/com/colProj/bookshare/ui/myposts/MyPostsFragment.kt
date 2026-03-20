@@ -46,7 +46,7 @@ class MyPostsFragment : Fragment() {
             val action = MyPostsFragmentDirections.actionMyPostsFragmentToAddBookFragment(
                 bookTitle = post.bookTitle,
                 author = post.author,
-                imageUrl = post.imageUrl,
+                imageUrl = post.localImagePath ?: post.imageUrl,
                 bookSummary = post.description, // Mapped to recommendation field in AddBookFragment
                 postId = post.id,
                 rating = post.rating
@@ -59,7 +59,7 @@ class MyPostsFragment : Fragment() {
              val action = MyPostsFragmentDirections.actionMyPostsFragmentToBookDetailsFragment(
                  bookTitle = post.bookTitle,
                  author = post.author,
-                 imageUrl = post.imageUrl,
+                 imageUrl = post.localImagePath ?: post.imageUrl,
                  bookSummary = post.description
              )
              findNavController().navigate(action)

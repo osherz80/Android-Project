@@ -16,5 +16,6 @@ data class Post(
     @PropertyName("author") val author: String = "",
     @PropertyName("rating") val rating: Float = 0f,
     @PropertyName("imageUrl") val imageUrl: String = "",
-    @PropertyName("timestamp") val timestamp: Long = System.currentTimeMillis()
+    @PropertyName("timestamp") val timestamp: Long = System.currentTimeMillis(),
+    @PropertyName("localImagePath") val localImagePath: String? = null
 )
