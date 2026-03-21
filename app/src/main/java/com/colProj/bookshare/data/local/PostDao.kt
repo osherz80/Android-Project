@@ -9,17 +9,25 @@ import com.colProj.bookshare.data.model.Post
 
 @Dao
 interface PostDao {
-    @Query("SELECT * FROM posts ORDER BY timestamp DESC")
-    fun getAllPosts(): LiveData<List<Post>>
-
-    @Query("SELECT * FROM posts WHERE bookTitle = :title ORDER BY timestamp DESC")
-    fun getPostsByTitle(title: String): LiveData<List<Post>>
-
-    @Query("SELECT * FROM posts WHERE userId = :userId ORDER BY timestamp DESC")
-    fun getUserPosts(userId: String): LiveData<List<Post>>
-
-    @Query("SELECT * FROM posts WHERE bookTitle LIKE '%' || :query || '%' OR author LIKE '%' || :query || '%' OR userName LIKE '%' || :query || '%' ORDER BY timestamp DESC")
-    fun searchPosts(query: String): LiveData<List<Post>>
+    @Query("""
+        SELECT posts.*, COALESCE(users.displayName, posts.userName) as userName 
+        FROM posts 
+        LEFT JOIN users ON posts.userId = users.uid 
+        WHERE 
+            (:userId IS NULL OR posts.userId = :userId) AND 
+            (:title IS NULL OR posts.bookTitle = :title) AND 
+            (:query IS NULL OR (
+                posts.bookTitle LIKE '%' || :query || '%' OR 
+                posts.author LIKE '%' || :query || '%' OR 
+                COALESCE(users.displayName, posts.userName) LIKE '%' || :query || '%'
+            ))
+        ORDER BY timestamp DESC
+    """)
+    fun getPosts(
+        query: String? = null,
+        userId: String? = null,
+        title: String? = null
+    ): LiveData<List<Post>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPosts(posts: List<Post>)

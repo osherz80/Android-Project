@@ -30,18 +30,18 @@ class BookRepository(private val context: Context) {
         firestore.firestoreSettings = settings
     }
 
-    val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
+    val allPosts: LiveData<List<Post>> = postDao.getPosts()
 
     fun getUserPosts(userId: String): LiveData<List<Post>> {
-        return postDao.getUserPosts(userId)
+        return postDao.getPosts(userId = userId)
     }
 
     fun getPostsByTitle(title: String): LiveData<List<Post>> {
-        return postDao.getPostsByTitle(title)
+        return postDao.getPosts(title = title)
     }
 
     fun searchPosts(query: String): LiveData<List<Post>> {
-        return postDao.searchPosts(query)
+        return postDao.getPosts(query = query)
     }
 
     suspend fun syncPostsFromFirestore(): Resource<Unit> {
