@@ -1,6 +1,7 @@
 package com.colProj.bookshare.ui.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ class EditProfileFragment : Fragment() {
 
 
     private val viewModel: ProfileViewModel by activityViewModels()
+    private var hasInjectedData = false
 
 
     override fun onCreateView(
@@ -50,8 +52,7 @@ class EditProfileFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
-            android.util.Log.d("EditProfileFragment", "User observed: $user, hasInjectedData: ${viewModel.hasInjectedData}")
-            if (!viewModel.hasInjectedData) {
+            if (!hasInjectedData) {
                 user?.let { u ->
                     val initialName = u.displayName ?: u.email
                     val initialBio = if (u.bio.isNullOrBlank()) {
@@ -66,8 +67,8 @@ class EditProfileFragment : Fragment() {
                         etBio.setText(initialBio)
                     }
                     
-                    viewModel.hasInjectedData = true
-                    android.util.Log.d("EditProfileFragment", "Data injected: name=$initialName, bio=$initialBio")
+                    hasInjectedData = true
+                    Log.d("EditProfileFragment", "Data injected: name=$initialName, bio=$initialBio")
                 }
             }
         }
