@@ -135,16 +135,38 @@ class AuthRepository private constructor(context: Context) {
     }
 
     fun updatePhotoUrl(uid: String, photoUrl: String, onResult: (Boolean) -> Unit) {
-        executor.execute {
-            try {
-                val user = userDao.getLoggedInUser()
-                if (user != null && user.uid == uid) {
-                    userDao.updateUser(user.copy(photoUrl = photoUrl))
-                    mainHandler.post { onResult(true) }
-                } else {
+        // Assume photoUrl is a local content:// URI initially
+        val uri = android.net.Uri.parse(photoUrl)
+        val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().getReference("profile_pics/${uid}.jpg")
+
+        storageRef.putFile(uri).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    val remoteUrl = downloadUri.toString()
+                    
+                    // Update Firebase Auth Profile optionally
+                    val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                        .setPhotoUri(downloadUri)
+                        .build()
+                    auth.currentUser?.updateProfile(profileUpdates)
+
+                    executor.execute {
+                        try {
+                            val user = userDao.getLoggedInUser()
+                            if (user != null && user.uid == uid) {
+                                userDao.updateUser(user.copy(photoUrl = remoteUrl))
+                                mainHandler.post { onResult(true) }
+                            } else {
+                                mainHandler.post { onResult(false) }
+                            }
+                        } catch (e: Exception) {
+                            mainHandler.post { onResult(false) }
+                        }
+                    }
+                }.addOnFailureListener {
                     mainHandler.post { onResult(false) }
                 }
-            } catch (e: Exception) {
+            } else {
                 mainHandler.post { onResult(false) }
             }
         }

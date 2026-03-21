@@ -68,7 +68,7 @@ class AddBookFragment : Fragment() {
         alignScroll(etRecommendation)
 
         if (!args.postId.isNullOrEmpty()) {
-            // EDIT MODE
+
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -81,18 +81,8 @@ class AddBookFragment : Fragment() {
             etImage.setText(args.imageUrl)
             etImage.isEnabled = false
             
-            etRecommendation.setText(args.bookSummary) // Wait, summary vs recommendation? 
-            // Actually in MyPostsFragment: bookSummary = post.description
-            // So args.bookSummary is actually the recommendation.
-            // Let's check MyPostsFragment mapping...
+            etRecommendation.setText(args.bookSummary) 
             
-            // Re-evaluating args mapping from MyPostsFragment:
-            // bookTitle = post.bookTitle,
-            // author = post.author,
-            // imageUrl = post.imageUrl,
-            // bookSummary = post.description (This is the recommendation!)
-            
-            etRecommendation.setText(args.bookSummary)
             ratingBar.rating = args.rating
 
             if (!args.imageUrl.isNullOrEmpty()) {
@@ -132,24 +122,7 @@ class AddBookFragment : Fragment() {
             rvSearch.visibility = View.GONE
 
             btnSave.text = "Submit Review"
-        } else {
-            // NEW POST MODE (from Scratch)
-            // ... (stub values code)
-            etTitle.setText("The Great Gatsby")
-            etAuthor.setText("F. Scott Fitzgerald")
-            etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
-            etRecommendation.setText("An absolute classic! The prose is beautiful and the themes are timeless.")
-            etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
-            ratingBar.rating = 5f
-
-            etTitle.isEnabled = true
-            etAuthor.isEnabled = true
-
-            com.bumptech.glide.Glide.with(this)
-                .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
-                .placeholder(R.color.input_bg)
-                .into(ivBookCover)
-        }
+        } 
 
         rvSearch.layoutManager = LinearLayoutManager(context)
         val adapter = SearchResultsAdapter { book ->

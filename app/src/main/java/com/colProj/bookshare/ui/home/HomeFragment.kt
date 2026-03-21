@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colProj.bookshare.ui.search.PostsAdapter
+import com.colProj.bookshare.utils.Resource
 
 class HomeFragment : Fragment() {
 
@@ -39,7 +40,7 @@ class HomeFragment : Fragment() {
             val action = HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment(
                 bookTitle = post.bookTitle,
                 author = post.author,
-                imageUrl = post.imageUrl,
+                imageUrl = post.localImagePath ?: post.imageUrl,
                 bookSummary = post.bookSummary
             )
             findNavController().navigate(action)
@@ -47,6 +48,21 @@ class HomeFragment : Fragment() {
 
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
             adapter.setPosts(posts)
+        }
+
+        viewModel.syncStatus.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    binding.progressBar.visibility = android.view.View.VISIBLE
+                }
+                is Resource.Success -> {
+                    binding.progressBar.visibility = android.view.View.GONE
+                }
+                is Resource.Error -> {
+                    binding.progressBar.visibility = android.view.View.GONE
+                    android.widget.Toast.makeText(requireContext(), resource.message, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

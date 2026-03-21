@@ -11,5 +11,6 @@ data class User(
     val displayName: String? = null,
     val photoUrl: String? = null,
     val bio: String? = null,
-    val isLoggedIn: Boolean = false // Track current session local
+    val isLoggedIn: Boolean = false, // Track current session local
+    val localImagePath: String? = null
 )

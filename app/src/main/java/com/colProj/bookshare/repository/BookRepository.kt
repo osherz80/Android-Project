@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class BookRepository(context: Context) {
+class BookRepository(private val context: Context) {
 
     private val postDao = AppDatabase.getDatabase(context).postDao()
     private val firestore = FirebaseFirestore.getInstance()
@@ -25,72 +25,47 @@ class BookRepository(context: Context) {
 
     init {
         val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
             .build()
         firestore.firestoreSettings = settings
     }
 
-    private class FirestorePostLiveData(
-        private val query: Query,
-        private val filter: ((Post) -> Boolean)? = null,
-        private val postSort: ((List<Post>) -> List<Post>)? = null
-    ) : LiveData<List<Post>>() {
-        private var registration: ListenerRegistration? = null
-
-        override fun onActive() {
-            super.onActive()
-            registration = query.addSnapshotListener { snapshot, e ->
-                if (e != null) return@addSnapshotListener
-                if (snapshot != null) {
-                    var posts = snapshot.toObjects(Post::class.java)
-                    if (filter != null) {
-                        posts = posts.filter(filter)
-                    }
-                    if (postSort != null) {
-                        posts = postSort(posts)
-                    }
-                    value = posts
-                }
-            }
-        }
-
-        override fun onInactive() {
-            super.onInactive()
-            registration?.remove()
-            registration = null
-        }
-    }
-
-    val allPosts: LiveData<List<Post>> = 
-        FirestorePostLiveData(postsCollection.orderBy("timestamp", Query.Direction.DESCENDING))
+    val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
 
     fun getUserPosts(userId: String): LiveData<List<Post>> {
-        return FirestorePostLiveData(
-            postsCollection.whereEqualTo("userId", userId),
-            postSort = { it.sortedByDescending { post -> post.timestamp } }
-        )
+        return postDao.getUserPosts(userId)
     }
 
     fun getPostsByTitle(title: String): LiveData<List<Post>> {
-        return FirestorePostLiveData(
-            postsCollection.whereEqualTo("bookTitle", title),
-            postSort = { it.sortedByDescending { post -> post.timestamp } }
-        )
+        return postDao.getPostsByTitle(title)
     }
 
     fun searchPosts(query: String): LiveData<List<Post>> {
-        return FirestorePostLiveData(
-            postsCollection.orderBy("timestamp", Query.Direction.DESCENDING),
-            filter = { 
-                it.bookTitle.contains(query, ignoreCase = true) || 
-                it.author.contains(query, ignoreCase = true) || 
-                it.userName.contains(query, ignoreCase = true) 
+        return postDao.searchPosts(query)
+    }
+
+    suspend fun syncPostsFromFirestore(): Resource<Unit> {
+        return try {
+            val snapshot = postsCollection.get().await()
+            val fetchedPosts = snapshot.toObjects(Post::class.java)
+            
+            val updatedPosts = fetchedPosts.map { post ->
+                if (post.imageUrl.isNotBlank() && post.localImagePath.isNullOrBlank()) {
+                    val localPath = com.colProj.bookshare.utils.ImageCacheManager.downloadAndCacheImage(context, post.imageUrl, post.id)
+                    post.copy(localImagePath = localPath)
+                } else {
+                    post
+                }
             }
-        )
+            
+            postDao.insertPosts(updatedPosts)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to sync posts")
+        }
     }
 
     suspend fun refreshUserPosts(userId: String): Resource<Unit> {
-         return Resource.Success(Unit)
+         return syncPostsFromFirestore()
     }
 
     suspend fun addPost(post: Post): Resource<Unit> {
@@ -101,6 +76,9 @@ class BookRepository(context: Context) {
             // 1. Firestore (Async operation)
             document.set(newPost).await()
 
+            // 2. Room Cache Update
+            postDao.insertPost(newPost)
+
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to add post")
@@ -110,6 +88,7 @@ class BookRepository(context: Context) {
     suspend fun deletePost(postId: String): Resource<Unit> {
         return try {
             postsCollection.document(postId).delete().await()
+            postDao.deletePost(postId)
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to delete post")
