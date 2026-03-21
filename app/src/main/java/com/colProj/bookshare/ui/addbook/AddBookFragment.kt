@@ -68,7 +68,7 @@ class AddBookFragment : Fragment() {
         alignScroll(etRecommendation)
 
         if (!args.postId.isNullOrEmpty()) {
-            // EDIT MODE
+
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -81,18 +81,8 @@ class AddBookFragment : Fragment() {
             etImage.setText(args.imageUrl)
             etImage.isEnabled = false
             
-            etRecommendation.setText(args.bookSummary) // Wait, summary vs recommendation? 
-            // Actually in MyPostsFragment: bookSummary = post.description
-            // So args.bookSummary is actually the recommendation.
-            // Let's check MyPostsFragment mapping...
+            etRecommendation.setText(args.bookSummary) 
             
-            // Re-evaluating args mapping from MyPostsFragment:
-            // bookTitle = post.bookTitle,
-            // author = post.author,
-            // imageUrl = post.imageUrl,
-            // bookSummary = post.description (This is the recommendation!)
-            
-            etRecommendation.setText(args.bookSummary)
             ratingBar.rating = args.rating
 
             if (!args.imageUrl.isNullOrEmpty()) {
