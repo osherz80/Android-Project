@@ -2,6 +2,7 @@ package com.colProj.bookshare.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.colProj.bookshare.BuildConfig
 import com.colProj.bookshare.data.AppDatabase
 import com.colProj.bookshare.data.model.GoogleBookItem
 import com.colProj.bookshare.data.model.Post
@@ -118,23 +119,7 @@ class BookRepository(private val context: Context) {
     
     suspend fun searchBooks(query: String): Resource<List<GoogleBookItem>> {
         return try {
-            // Note: API Key should be in BuildConfig.GOOGLE_BOOKS_API_KEY if configured
-            // Since we can't easily access BuildConfig here without import, we'll try to find it or pass null
-            // For now, let's assume we pass null if not available.
-            // Ideally, pass BuildConfig.GOOGLE_BOOKS_API_KEY
-            
-            // To access BuildConfig, we need to import it. It's usually in the app package.
-            // com.colProj.bookshare.BuildConfig
-            
-            val apiKey = try {
-                val buildConfigClass = Class.forName("com.colProj.bookshare.BuildConfig")
-                val field = buildConfigClass.getField("GOOGLE_BOOKS_API_KEY")
-                val key = field.get(null) as? String
-                if (key.isNullOrBlank()) null else key
-            } catch (e: Exception) {
-                null
-            }
-
+            val apiKey = BuildConfig.GOOGLE_BOOKS_API_KEY
             val response = RetrofitClient.instance.searchBooks(query, apiKey)
             Resource.Success(response.items ?: emptyList())
         } catch (e: retrofit2.HttpException) {
