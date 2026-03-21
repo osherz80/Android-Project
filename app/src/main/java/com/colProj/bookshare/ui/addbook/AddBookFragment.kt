@@ -123,23 +123,6 @@ class AddBookFragment : Fragment() {
 
             btnSave.text = "Submit Review"
         } 
-        // else {
-        //     //default book for testing, prevent api call limits
-        //     etTitle.setText("The Great Gatsby")
-        //     etAuthor.setText("F. Scott Fitzgerald")
-        //     etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
-        //     etRecommendation.setText("An absolute classic! The prose is beautiful and the themes are timeless.")
-        //     etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
-        //     ratingBar.rating = 5f
-
-        //     etTitle.isEnabled = true
-        //     etAuthor.isEnabled = true
-
-        //     com.bumptech.glide.Glide.with(this)
-        //         .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
-        //         .placeholder(R.color.input_bg)
-        //         .into(ivBookCover)
-        // }
 
         rvSearch.layoutManager = LinearLayoutManager(context)
         val adapter = SearchResultsAdapter { book ->
