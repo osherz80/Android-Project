@@ -55,6 +55,7 @@ class AddBookFragment : Fragment() {
         val etImage = view.findViewById<TextInputEditText>(R.id.etImageUrl)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
         val btnSave = view.findViewById<Button>(R.id.btnSave)
+        val btnBack = view.findViewById<ImageView>(R.id.btnBack)
 
         val tilSearch = view.findViewById<TextInputLayout>(R.id.tilSearch)
         val etSearch = view.findViewById<TextInputEditText>(R.id.etSearchQuery)
@@ -68,7 +69,7 @@ class AddBookFragment : Fragment() {
         alignScroll(etRecommendation)
 
         if (!args.postId.isNullOrEmpty()) {
-
+            view.findViewById<TextView>(R.id.tvTitle).text = "Edit Recommendation"
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -204,6 +205,10 @@ class AddBookFragment : Fragment() {
             viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author, args.postId)
         }
 
+        btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         viewModel.addPostStatus.observe(viewLifecycleOwner) { resource ->
             when (resource.status) {
                 StatusResource.SUCCESS -> {
@@ -211,13 +216,7 @@ class AddBookFragment : Fragment() {
                     btnSave.isEnabled = true
                     Toast.makeText(context, "Post Added!", Toast.LENGTH_SHORT).show()
 
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(R.id.addBookFragment, true)
-                        .setLaunchSingleTop(true)
-                        .build()
-
-
-                    findNavController().navigate(R.id.homeFragment, null, navOptions)
+                    findNavController().popBackStack()
                 }
                 StatusResource.ERROR -> {
                     view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
