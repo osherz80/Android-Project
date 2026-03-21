@@ -1,6 +1,7 @@
 package com.colProj.bookshare.ui.profile
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -47,17 +48,16 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     fun clearImageStatus() { _imageUpdateStatus.value = null }
     fun clearProfileStatus() { _profileUpdateStatus.value = null }
 
-    var hasInjectedData = false
 
     fun fetchUser() {
         authRepository.getLoggedInUser { user ->
-            android.util.Log.d("ProfileViewModel", "Fetched local user: $user")
+            Log.d("ProfileViewModel", "Fetched local user: $user")
             if (user != null) {
                 _user.value = user
             } else {
                 // Try to recover from Firebase session if local DB record is missing
                 authRepository.syncUserWithFirebase { recoveredUser ->
-                    android.util.Log.d("ProfileViewModel", "Recovered user from Firebase: $recoveredUser")
+                    Log.d("ProfileViewModel", "Recovered user from Firebase: $recoveredUser")
                     _user.value = recoveredUser
                 }
             }
