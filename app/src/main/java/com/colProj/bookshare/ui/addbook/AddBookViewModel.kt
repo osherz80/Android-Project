@@ -20,7 +20,7 @@ class AddBookViewModel(application: Application) : AndroidViewModel(application)
 
     val addPostStatus: LiveData<Resource<Unit>> = _addPostStatus
 
-    fun addPost(title: String, bookSummary: String, recommendation: String, rating: Float, imageUrl: String, author: String) {
+    fun addPost(title: String, bookSummary: String, recommendation: String, rating: Float, imageUrl: String, author: String, postId: String? = null) {
 
         viewModelScope.launch {
             val userId = repository.getCurrentUserId()
@@ -32,6 +32,7 @@ class AddBookViewModel(application: Application) : AndroidViewModel(application)
             val userName = repository.getCurrentUserName() ?: "Anonymous"
 
             val post = Post(
+                id = postId ?: "",
                 userId = userId,
                 userName = userName,
                 bookTitle = title,

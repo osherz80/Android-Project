@@ -38,4 +38,15 @@ class MyPostsViewModel(application: Application) : AndroidViewModel(application)
              }
         }
     }
+
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            _refreshStatus.value = Resource.Loading()
+            val result = repository.deletePost(postId)
+            _refreshStatus.value = result
+            if (result is Resource.Success) {
+                // Refresh list if needed, but SnapshotListener should handle it
+            }
+        }
+    }
 }

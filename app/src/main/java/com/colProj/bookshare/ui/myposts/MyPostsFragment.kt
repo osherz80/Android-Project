@@ -34,9 +34,25 @@ class MyPostsFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        adapter = PostsAdapter()
+        adapter = PostsAdapter(showDeleteButton = true)
         _binding?.rvMyPosts?.layoutManager = LinearLayoutManager(context)
         _binding?.rvMyPosts?.adapter = adapter
+
+        adapter.onDeleteClick = { post ->
+            viewModel.deletePost(post.id)
+        }
+
+        adapter.onEditClick = { post ->
+            val action = MyPostsFragmentDirections.actionMyPostsFragmentToAddBookFragment(
+                bookTitle = post.bookTitle,
+                author = post.author,
+                imageUrl = post.imageUrl,
+                bookSummary = post.description, // Mapped to recommendation field in AddBookFragment
+                postId = post.id,
+                rating = post.rating
+            )
+            findNavController().navigate(action)
+        }
         
         adapter.setOnItemClickListener { post ->
             // Navigate to details if needed

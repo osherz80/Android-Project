@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.colProj.bookshare.R
 import com.colProj.bookshare.data.model.Post
 
-class PostsAdapter : RecyclerView.Adapter<PostViewHolder>() {
+class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView.Adapter<PostViewHolder>() {
     private var posts: List<Post> = emptyList()
 
     fun setPosts(newPosts: List<Post>) {
@@ -21,6 +21,8 @@ class PostsAdapter : RecyclerView.Adapter<PostViewHolder>() {
     }
 
     private var onItemClick: ((Post) -> Unit)? = null
+    var onDeleteClick: ((Post) -> Unit)? = null
+    var onEditClick: ((Post) -> Unit)? = null
 
     fun setOnItemClickListener(listener: (Post) -> Unit) {
         onItemClick = listener
@@ -34,6 +36,16 @@ class PostsAdapter : RecyclerView.Adapter<PostViewHolder>() {
                              else "Unknown Author"
         holder.description.text = post.description
         holder.description.movementMethod = ScrollingMovementMethod()
+        
+        holder.btnDelete.visibility = if (showDeleteButton) android.view.View.VISIBLE else android.view.View.GONE
+        holder.btnDelete.setOnClickListener {
+            onDeleteClick?.invoke(post)
+        }
+
+        holder.btnEdit.visibility = if (showDeleteButton) android.view.View.VISIBLE else android.view.View.GONE
+        holder.btnEdit.setOnClickListener {
+            onEditClick?.invoke(post)
+        }
         
         // Handle nested scroll inside RecyclerView
         holder.description.setOnTouchListener { v, event ->

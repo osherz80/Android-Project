@@ -20,7 +20,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     
     val posts: LiveData<List<Post>> = _searchQuery.switchMap { query ->
         if (query.isNullOrBlank()) {
-            repository.allPosts
+            MutableLiveData(emptyList())
         } else {
             repository.searchPosts(query)
         }

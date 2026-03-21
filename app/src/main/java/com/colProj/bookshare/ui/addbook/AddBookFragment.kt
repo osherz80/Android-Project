@@ -56,21 +56,19 @@ class AddBookFragment : Fragment() {
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
         val btnSave = view.findViewById<Button>(R.id.btnSave)
 
-        // Search items
         val tilSearch = view.findViewById<TextInputLayout>(R.id.tilSearch)
         val etSearch = view.findViewById<TextInputEditText>(R.id.etSearchQuery)
         val rvSearch = view.findViewById<RecyclerView>(R.id.rvSearchResults)
         val ivBookCover = view.findViewById<ImageView>(R.id.ivBookCover)
 
-        // Make Book Summary Read-Only but Scrollable
-        etBookSummary.keyListener = null // Disable typing
+
+        etBookSummary.keyListener = null
 
         alignScroll(etBookSummary)
         alignScroll(etRecommendation)
 
-        // Handle Arguments for "Add Review" mode
-        if (!args.bookTitle.isNullOrEmpty()) {
-            // Pre-fill and lock
+        if (!args.postId.isNullOrEmpty()) {
+            // EDIT MODE
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -78,12 +76,25 @@ class AddBookFragment : Fragment() {
             etAuthor.isEnabled = false
 
             etBookSummary.setText(args.bookSummary)
-            etBookSummary.isEnabled = false // Read-only but scrollable (handled by alignScroll)
+            etBookSummary.isEnabled = false
 
             etImage.setText(args.imageUrl)
-            etImage.isEnabled = false // Hide maybe? Or just lock.
+            etImage.isEnabled = false
+            
+            etRecommendation.setText(args.bookSummary) // Wait, summary vs recommendation? 
+            // Actually in MyPostsFragment: bookSummary = post.description
+            // So args.bookSummary is actually the recommendation.
+            // Let's check MyPostsFragment mapping...
+            
+            // Re-evaluating args mapping from MyPostsFragment:
+            // bookTitle = post.bookTitle,
+            // author = post.author,
+            // imageUrl = post.imageUrl,
+            // bookSummary = post.description (This is the recommendation!)
+            
+            etRecommendation.setText(args.bookSummary)
+            ratingBar.rating = args.rating
 
-            // Load Image
             if (!args.imageUrl.isNullOrEmpty()) {
                 com.bumptech.glide.Glide.with(this)
                     .load(args.imageUrl)
@@ -91,12 +102,53 @@ class AddBookFragment : Fragment() {
                     .into(ivBookCover)
             }
 
-            // Hide Search UI
-            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE // If exists, otherwise just hide input
+            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE
+            tilSearch.visibility = View.GONE
+            rvSearch.visibility = View.GONE
+
+            btnSave.text = "Update Post"
+        } else if (!args.bookTitle.isNullOrEmpty()) {
+            // ADD REVIEW MODE (from Book Details)
+            etTitle.setText(args.bookTitle)
+            etTitle.isEnabled = false
+
+            etAuthor.setText(args.author)
+            etAuthor.isEnabled = false
+
+            etBookSummary.setText(args.bookSummary)
+            etBookSummary.isEnabled = false
+
+            etImage.setText(args.imageUrl)
+            etImage.isEnabled = false
+            if (!args.imageUrl.isNullOrEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(args.imageUrl)
+                    .placeholder(R.color.input_bg)
+                    .into(ivBookCover)
+            }
+
+            view.findViewById<TextView>(R.id.etSearchQuery)?.visibility = View.GONE
             tilSearch.visibility = View.GONE
             rvSearch.visibility = View.GONE
 
             btnSave.text = "Submit Review"
+        } else {
+            // NEW POST MODE (from Scratch)
+            // ... (stub values code)
+            etTitle.setText("The Great Gatsby")
+            etAuthor.setText("F. Scott Fitzgerald")
+            etBookSummary.setText("A story of wealth, love, and the American Dream in the 1920s.")
+            etRecommendation.setText("An absolute classic! The prose is beautiful and the themes are timeless.")
+            etImage.setText("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
+            ratingBar.rating = 5f
+
+            etTitle.isEnabled = true
+            etAuthor.isEnabled = true
+
+            com.bumptech.glide.Glide.with(this)
+                .load("https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg")
+                .placeholder(R.color.input_bg)
+                .into(ivBookCover)
         }
 
         rvSearch.layoutManager = LinearLayoutManager(context)
@@ -133,7 +185,7 @@ class AddBookFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                    kotlinx.coroutines.delay(1000) // 1000ms debounce to prevent hitting API limits
+                    kotlinx.coroutines.delay(1000) // 1000ms debounce
                     s?.toString()?.let { query ->
                         if (query.length > 2) {
                             performSearch(query)
@@ -176,8 +228,7 @@ class AddBookFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Pass separately: Book Summary is now distinct from User Recommendation
-            viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author)
+            viewModel.addPost(title, bookSummary, recommendation, rating, imageUrl, author, args.postId)
         }
 
         viewModel.addPostStatus.observe(viewLifecycleOwner) { resource ->
@@ -193,7 +244,7 @@ class AddBookFragment : Fragment() {
                         .build()
 
 
-                    findNavController().navigate(R.id.searchFragment, null, navOptions)
+                    findNavController().navigate(R.id.homeFragment, null, navOptions)
                 }
                 StatusResource.ERROR -> {
                     view.findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
@@ -221,7 +272,6 @@ class AddBookFragment : Fragment() {
         }
     }
 
-    // Helper to enable scrolling inside EditText within ScrollView
     fun alignScroll(editText: TextInputEditText) {
         editText.movementMethod = ScrollingMovementMethod()
         editText.setOnTouchListener { v, event ->

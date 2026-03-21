@@ -9,6 +9,8 @@ import com.colProj.bookshare.data.remote.RetrofitClient
 import com.colProj.bookshare.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -21,56 +23,96 @@ class BookRepository(context: Context) {
     private val auth = FirebaseAuth.getInstance()
     private val postsCollection = firestore.collection("posts")
 
-    val allPosts: LiveData<List<Post>> = postDao.getAllPosts()
+    init {
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
+        firestore.firestoreSettings = settings
+    }
+
+    private class FirestorePostLiveData(
+        private val query: Query,
+        private val filter: ((Post) -> Boolean)? = null,
+        private val postSort: ((List<Post>) -> List<Post>)? = null
+    ) : LiveData<List<Post>>() {
+        private var registration: ListenerRegistration? = null
+
+        override fun onActive() {
+            super.onActive()
+            registration = query.addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                if (snapshot != null) {
+                    var posts = snapshot.toObjects(Post::class.java)
+                    if (filter != null) {
+                        posts = posts.filter(filter)
+                    }
+                    if (postSort != null) {
+                        posts = postSort(posts)
+                    }
+                    value = posts
+                }
+            }
+        }
+
+        override fun onInactive() {
+            super.onInactive()
+            registration?.remove()
+            registration = null
+        }
+    }
+
+    val allPosts: LiveData<List<Post>> = 
+        FirestorePostLiveData(postsCollection.orderBy("timestamp", Query.Direction.DESCENDING))
 
     fun getUserPosts(userId: String): LiveData<List<Post>> {
-        return postDao.getUserPosts(userId)
+        return FirestorePostLiveData(
+            postsCollection.whereEqualTo("userId", userId),
+            postSort = { it.sortedByDescending { post -> post.timestamp } }
+        )
     }
 
     fun getPostsByTitle(title: String): LiveData<List<Post>> {
-        return postDao.getPostsByTitle(title)
+        return FirestorePostLiveData(
+            postsCollection.whereEqualTo("bookTitle", title),
+            postSort = { it.sortedByDescending { post -> post.timestamp } }
+        )
     }
 
     fun searchPosts(query: String): LiveData<List<Post>> {
-        return postDao.searchPosts(query)
+        return FirestorePostLiveData(
+            postsCollection.orderBy("timestamp", Query.Direction.DESCENDING),
+            filter = { 
+                it.bookTitle.contains(query, ignoreCase = true) || 
+                it.author.contains(query, ignoreCase = true) || 
+                it.userName.contains(query, ignoreCase = true) 
+            }
+        )
     }
 
     suspend fun refreshUserPosts(userId: String): Resource<Unit> {
-         return try {
-             val snapshot = postsCollection
-                 .whereEqualTo("userId", userId)
-                 .get()
-                 .await()
-             val posts = snapshot.toObjects(Post::class.java)
-             // The query above doesn't support ordering by default without a composite index.
-             // We can sort in memory since the user's post count shouldn't be massive.
-             val sortedPosts = posts.sortedByDescending { it.timestamp }
-
-             withContext(Dispatchers.IO) {
-                 postDao.deleteUserPosts(userId)
-                 postDao.insertPosts(sortedPosts)
-             }
-             Resource.Success(Unit)
-         } catch (e: Exception) {
-             Resource.Error(e.message ?: "Failed to fetch user posts")
-         }
+         return Resource.Success(Unit)
     }
 
     suspend fun addPost(post: Post): Resource<Unit> {
         return try {
-            val document = postsCollection.document()
+            val document = if (post.id.isNotEmpty()) postsCollection.document(post.id) else postsCollection.document()
             val newPost = post.copy(id = document.id)
             
-            // 1. Firestore (Async operation with timeout)
-            document.set(newPost)
+            // 1. Firestore (Async operation)
+            document.set(newPost).await()
 
-            // 2. Room (Blocking IO operation)
-            withContext(Dispatchers.IO) {
-                postDao.insertPost(newPost)
-            }
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to add post")
+        }
+    }
+
+    suspend fun deletePost(postId: String): Resource<Unit> {
+        return try {
+            postsCollection.document(postId).delete().await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to delete post")
         }
     }
     

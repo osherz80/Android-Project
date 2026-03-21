@@ -23,6 +23,9 @@
         android:name="com.colProj.bookshare.ui.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_bookDetailsFragment"
+            app:destination="@id/bookDetailsFragment" />
     </fragment>
 
     <fragment
@@ -60,6 +63,15 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="postId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="rating"
+            app:argType="float"
+            android:defaultValue="0.0" />
     </fragment>
 
     <fragment
@@ -88,6 +100,9 @@
         <action
             android:id="@+id/action_myPostsFragment_to_bookDetailsFragment"
             app:destination="@id/bookDetailsFragment" />
+        <action
+            android:id="@+id/action_myPostsFragment_to_addBookFragment"
+            app:destination="@id/addBookFragment" />
     </fragment>
 
 
