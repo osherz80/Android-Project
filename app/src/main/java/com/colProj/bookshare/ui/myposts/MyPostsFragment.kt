@@ -43,7 +43,7 @@ class MyPostsFragment : Fragment() {
         }
 
         adapter.onEditClick = { post ->
-            val action = MyPostsFragmentDirections.actionMyPostsFragmentToAddBookFragment(
+            val action = MyPostsFragmentDirections.actionMyPostsFragmentToEditBookFragment(
                 bookTitle = post.bookTitle,
                 author = post.author,
                 imageUrl = post.localImagePath ?: post.imageUrl,

@@ -101,8 +101,8 @@
             android:id="@+id/action_myPostsFragment_to_bookDetailsFragment"
             app:destination="@id/bookDetailsFragment" />
         <action
-            android:id="@+id/action_myPostsFragment_to_addBookFragment"
-            app:destination="@id/addBookFragment" />
+            android:id="@+id/action_myPostsFragment_to_editBookFragment"
+            app:destination="@id/editBookFragment" />
     </fragment>
 
 
@@ -132,6 +132,42 @@
         <action
             android:id="@+id/action_bookDetailsFragment_to_addBookFragment"
             app:destination="@id/addBookFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editBookFragment"
+        android:name="com.colProj.bookshare.ui.addbook.AddBookFragment"
+        android:label="Edit Post"
+        tools:layout="@layout/fragment_add_book">
+        <argument
+            android:name="bookTitle"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="author"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="imageUrl"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="bookSummary"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="postId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="rating"
+            app:argType="float"
+            android:defaultValue="0.0" />
     </fragment>
 
 
