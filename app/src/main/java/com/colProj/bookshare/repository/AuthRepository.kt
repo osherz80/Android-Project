@@ -12,6 +12,7 @@ import java.util.concurrent.Executors
 
 class AuthRepository private constructor(context: Context) {
 
+    private val appContext = context.applicationContext
     private val auth = FirebaseAuth.getInstance()
     private val userDao = AppDatabase.getDatabase(context).userDao()
     private val executor = Executors.newSingleThreadExecutor()
@@ -135,38 +136,86 @@ class AuthRepository private constructor(context: Context) {
     }
 
     fun updatePhotoUrl(uid: String, photoUrl: String, onResult: (Boolean) -> Unit) {
-        // Assume photoUrl is a local content:// URI initially
-        val uri = android.net.Uri.parse(photoUrl)
-        val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().getReference("profile_pics/${uid}.jpg")
+        Log.d("AuthRepository", "Starting updatePhotoUrl local only for uid: $uid with url: $photoUrl")
+        
+        // If it's already a remote URL, skip upload and just update local/auth profile
+        if (photoUrl.startsWith("http") || photoUrl.startsWith("https")) {
+            Log.d("AuthRepository", "URL is already remote, skipping upload.")
+            updateUserAndProfile(uid, photoUrl, onResult)
+            return
+        }
 
-        storageRef.putFile(uri).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    val remoteUrl = downloadUri.toString()
-                    
-                    // Update Firebase Auth Profile optionally
-                    val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                        .setPhotoUri(downloadUri)
-                        .build()
-                    auth.currentUser?.updateProfile(profileUpdates)
+        val uri = try {
+            android.net.Uri.parse(photoUrl)
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Failed to parse URI: $photoUrl", e)
+            onResult(false)
+            return
+        }
 
-                    executor.execute {
-                        try {
-                            val user = userDao.getLoggedInUser()
-                            if (user != null && user.uid == uid) {
-                                userDao.updateUser(user.copy(photoUrl = remoteUrl))
-                                mainHandler.post { onResult(true) }
-                            } else {
-                                mainHandler.post { onResult(false) }
-                            }
-                        } catch (e: Exception) {
-                            mainHandler.post { onResult(false) }
-                        }
+        executor.execute {
+            try {
+                // Copy URI content to local file for reliable local storage
+                val context = appContext
+                
+                Log.d("AuthRepository", "Copying image to local app storage...")
+                val localPath = "profile_pic_${uid}_${System.currentTimeMillis()}.jpg"
+                val localFile = java.io.File(context?.filesDir, localPath)
+                val inputStream = context?.contentResolver?.openInputStream(uri)
+                val outputStream = java.io.FileOutputStream(localFile)
+                inputStream?.use { input ->
+                    outputStream.use { output ->
+                        input.copyTo(output)
                     }
-                }.addOnFailureListener {
+                }
+                
+                val finalPath = localFile.absolutePath
+                Log.d("AuthRepository", "Local file saved at: $finalPath")
+
+                // Update local Room database
+                val user = userDao.getLoggedInUser()
+                if (user != null && user.uid == uid) {
+                    val updatedUser = user.copy(localImagePath = finalPath)
+                    userDao.updateUser(updatedUser)
+                    Log.d("AuthRepository", "Local DB updated with local image path")
+                    mainHandler.post { onResult(true) }
+                } else {
+                    Log.e("AuthRepository", "Local user not found or UID mismatch")
                     mainHandler.post { onResult(false) }
                 }
-            } else {
+            } catch (e: Exception) {
+                Log.e("AuthRepository", "Error getting or saving file", e)
+                mainHandler.post { onResult(false) }
+            }
+        }
+    }
+
+    private fun updateUserAndProfile(uid: String, remoteUrl: String, onResult: (Boolean) -> Unit) {
+        Log.d("AuthRepository", "Updating profile and DB with URL: $remoteUrl")
+        
+        val downloadUri = android.net.Uri.parse(remoteUrl)
+        
+        // Update Firebase Auth Profile optionally
+        val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+            .setPhotoUri(downloadUri)
+            .build()
+        auth.currentUser?.updateProfile(profileUpdates)?.addOnCompleteListener { profileTask ->
+            Log.d("AuthRepository", "Firebase Profile update successful: ${profileTask.isSuccessful}")
+        }
+
+        executor.execute {
+            try {
+                val user = userDao.getLoggedInUser()
+                if (user != null && user.uid == uid) {
+                    userDao.updateUser(user.copy(photoUrl = remoteUrl))
+                    Log.d("AuthRepository", "Local DB updated with remote URL")
+                    mainHandler.post { onResult(true) }
+                } else {
+                    Log.e("AuthRepository", "Local user not found or UID mismatch: localUser=$user, expectedUid=$uid")
+                    mainHandler.post { onResult(false) }
+                }
+            } catch (e: Exception) {
+                Log.e("AuthRepository", "Local DB update failed", e)
                 mainHandler.post { onResult(false) }
             }
         }
@@ -191,6 +240,7 @@ class AuthRepository private constructor(context: Context) {
                             email = email,
                             displayName = existingToMerge?.displayName ?: firebaseUser.displayName,
                             photoUrl = existingToMerge?.photoUrl ?: firebaseUser.photoUrl?.toString(),
+                            localImagePath = existingToMerge?.localImagePath,
                             bio = existingToMerge?.bio,
                             isLoggedIn = true
                         )

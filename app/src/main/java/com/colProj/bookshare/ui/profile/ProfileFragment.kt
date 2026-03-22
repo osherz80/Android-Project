@@ -88,13 +88,16 @@ class ProfileFragment : Fragment() {
                     b.tvUsername.text = u.displayName ?: u.email
                     b.tvBio.text = u.bio ?: getString(R.string.profile_bio)
                     
-                    if (!u.photoUrl.isNullOrEmpty()) {
+                    val imageToLoad = u.localImagePath ?: u.photoUrl
+                    if (!imageToLoad.isNullOrEmpty()) {
                         Glide.with(this)
-                            .load(Uri.parse(u.photoUrl))
+                            .load(imageToLoad)
                             .placeholder(R.drawable.ic_person)
                             .error(R.drawable.ic_person)
                             .circleCrop()
                             .into(b.ivProfileImage)
+                    } else {
+                        b.ivProfileImage.setImageResource(R.drawable.ic_person)
                     }
                 }
             }
