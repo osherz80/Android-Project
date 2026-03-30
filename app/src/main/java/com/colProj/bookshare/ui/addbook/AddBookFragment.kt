@@ -82,7 +82,7 @@ class AddBookFragment : Fragment() {
             etImage.setText(args.imageUrl)
             etImage.isEnabled = false
             
-            etRecommendation.setText(args.bookSummary) 
+            etRecommendation.setText(args.description) 
             
             ratingBar.rating = args.rating
 
@@ -260,6 +260,5 @@ class AddBookFragment : Fragment() {
             viewModel.searchBooks(query)
         }
     }
-    
 
 }

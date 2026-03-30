@@ -133,11 +133,7 @@ class BookDetailsFragment : Fragment() {
             val star = it.rating.toInt().coerceIn(0, 5)
             counts[star]++
         }
-        
-        // Find max to scale bars relative to the most frequent rating
-        // OR scale relative to total count. 
-        // Google Play Store often scales relative to the highest bar.
-        // Let's scale relative to Total for now, or Max. Customary is Max.
+
         val maxCount = counts.maxOrNull() ?: 1
         val max = if (maxCount > 0) maxCount else 1
         

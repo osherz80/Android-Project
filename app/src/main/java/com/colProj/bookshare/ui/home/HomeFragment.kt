@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.colProj.bookshare.databinding.FragmentHomeBinding
 
@@ -16,7 +17,7 @@ import com.colProj.bookshare.utils.Resource
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapter: PostsAdapter
 
@@ -24,17 +25,17 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): ConstraintLayout? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = PostsAdapter()
-        binding.rvHomePosts.layoutManager = LinearLayoutManager(context)
-        binding.rvHomePosts.adapter = adapter
+        binding?.rvHomePosts?.layoutManager = LinearLayoutManager(context)
+        binding?.rvHomePosts?.adapter = adapter
 
         adapter.setOnItemClickListener { post ->
             val action = HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment(
@@ -53,13 +54,13 @@ class HomeFragment : Fragment() {
         viewModel.syncStatus.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Loading -> {
-                    binding.progressBar.visibility = android.view.View.VISIBLE
+                    binding?.progressBar?.visibility = View.VISIBLE
                 }
                 is Resource.Success -> {
-                    binding.progressBar.visibility = android.view.View.GONE
+                    binding?.progressBar?.visibility = View.GONE
                 }
                 is Resource.Error -> {
-                    binding.progressBar.visibility = android.view.View.GONE
+                    binding?.progressBar?.visibility = View.GONE
                     android.widget.Toast.makeText(requireContext(), resource.message, android.widget.Toast.LENGTH_SHORT).show()
                 }
             }

@@ -64,6 +64,11 @@
             app:nullable="true"
             android:defaultValue="@null" />
         <argument
+            android:name="description"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
             android:name="postId"
             app:argType="string"
             app:nullable="true"
@@ -156,6 +161,11 @@
             android:defaultValue="@null" />
         <argument
             android:name="bookSummary"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="description"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
