@@ -24,14 +24,11 @@ class ProfileFragment : Fragment() {
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         uri?.let {
             try {
-                // Persist permission for local URIs
                 requireContext().contentResolver.takePersistableUriPermission(
                     it,
                     android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
-            } catch (e: Exception) {
-                // Ignore if not supported
-            }
+            } catch (e: Exception) {}
             viewModel.updateProfilePicture(it.toString())
         }
     }

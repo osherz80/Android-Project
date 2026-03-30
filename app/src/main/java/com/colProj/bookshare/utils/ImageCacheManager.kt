@@ -14,7 +14,6 @@ object ImageCacheManager {
             try {
                 if (imageUrl.isBlank()) return@withContext null
 
-                // Ensure securing http -> https if needed
                 val secureUrl = imageUrl.replace("http:", "https:")
 
                 val cacheDir = File(context.filesDir, "images")
@@ -22,11 +21,9 @@ object ImageCacheManager {
                     cacheDir.mkdirs()
                 }
 
-                // Append .jpg or generic extension
                 val safeFilename = "$filename.jpg"
                 val file = File(cacheDir, safeFilename)
 
-                // If it already exists, avoid downloading again
                 if (file.exists() && file.length() > 0) {
                     return@withContext file.absolutePath
                 }

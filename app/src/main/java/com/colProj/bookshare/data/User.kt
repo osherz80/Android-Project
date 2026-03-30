@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey val uid: String,
     val email: String,
-    val password: String? = null, // Empty for Google Auth users
+    val password: String? = null,
     val displayName: String? = null,
     val photoUrl: String? = null,
     val bio: String? = null,
-    val isLoggedIn: Boolean = false, // Track current session local
+    val isLoggedIn: Boolean = false,
     val localImagePath: String? = null
 )

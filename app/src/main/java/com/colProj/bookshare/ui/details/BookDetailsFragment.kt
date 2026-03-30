@@ -40,13 +40,11 @@ class BookDetailsFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        // Set Header Data from Safe Args
         _binding?.tvDetailTitle?.text = args.bookTitle
         _binding?.tvDetailAuthor?.text = args.author
         _binding?.tvDescription?.text = args.bookSummary
         _binding?.tvDescription?.movementMethod = ScrollingMovementMethod()
         
-        // Handle nested scroll inside NestedScrollView
         _binding?.tvDescription?.setOnTouchListener { v, event ->
             v.parent.requestDisallowInterceptTouchEvent(true)
             when (event.action and android.view.MotionEvent.ACTION_MASK) {
@@ -69,13 +67,11 @@ class BookDetailsFragment : Fragment() {
         
 
         
-        // Setup List
         adapter = PostsAdapter()
         _binding?.rvReviews?.layoutManager = LinearLayoutManager(context)
         _binding?.rvReviews?.adapter = adapter
         _binding?.rvReviews?.isNestedScrollingEnabled = false
 
-        // Fetch Data
         viewModel.setBookTitle(args.bookTitle)
         
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
@@ -109,7 +105,6 @@ class BookDetailsFragment : Fragment() {
             rbAvg?.rating = 0f
             tvCount?.text = "0 reviews"
             
-            // Reset bars
             resetProgressBar(_binding?.progress5, "5")
             resetProgressBar(_binding?.progress4, "4")
             resetProgressBar(_binding?.progress3, "3")
@@ -127,8 +122,7 @@ class BookDetailsFragment : Fragment() {
         rbAvg?.rating = avg
         tvCount?.text = "$count reviews"
         
-        // Distribution
-        val counts = IntArray(6) // 0..5
+        val counts = IntArray(6) 
         posts.forEach {
             val star = it.rating.toInt().coerceIn(0, 5)
             counts[star]++

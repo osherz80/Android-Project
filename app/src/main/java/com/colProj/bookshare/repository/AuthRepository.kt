@@ -27,7 +27,7 @@ class AuthRepository private constructor(context: Context) {
                         val newUser = User(
                             uid = firebaseUser.uid,
                             email = email,
-                            password = pass, // Ideally verify if we want to store password locally. For now keeping consistent.
+                            password = pass,
                             isLoggedIn = true
                         )
                         executor.execute {
@@ -50,7 +50,6 @@ class AuthRepository private constructor(context: Context) {
                     val firebaseUser = auth.currentUser
                     if (firebaseUser != null) {
                         executor.execute {
-                            // Update local generic user state if needed, or just sync
                             val existingUser = userDao.getUserByEmail(email) ?: User(
                                 uid = firebaseUser.uid,
                                 email = email,
@@ -86,7 +85,6 @@ class AuthRepository private constructor(context: Context) {
                         executor.execute {
                             try {
                                 val email = firebaseUser.email ?: ""
-                                // Try to find existing user by UID or Email
                                 val existingByUid = userDao.getUserByUid(firebaseUser.uid)
                                 val existingByEmail = userDao.getUserByEmail(email)
 
@@ -97,7 +95,6 @@ class AuthRepository private constructor(context: Context) {
                                 val user = User(
                                     uid = firebaseUser.uid,
                                     email = email,
-                                    // Prioritize existing local data, fallback to Google
                                     displayName = existingToMerge?.displayName ?: firebaseUser.displayName,
                                     photoUrl = existingToMerge?.photoUrl ?: firebaseUser.photoUrl?.toString(),
                                     bio = existingToMerge?.bio,
@@ -106,8 +103,6 @@ class AuthRepository private constructor(context: Context) {
 
                                 userDao.logoutAll()
 
-                                // If we found an existing record with a DIFFERENT UID (local user becoming Google user)
-                                // delete the old record to avoid duplicates of the same email
                                 if (existingByEmail != null && existingByEmail.uid != firebaseUser.uid) {
                                     userDao.deleteUserByUid(existingByEmail.uid)
                                     Log.d("AuthRepository", "Deleted older local record for email: $email")
@@ -138,7 +133,6 @@ class AuthRepository private constructor(context: Context) {
     fun updatePhotoUrl(uid: String, photoUrl: String, onResult: (Boolean) -> Unit) {
         Log.d("AuthRepository", "Starting updatePhotoUrl local only for uid: $uid with url: $photoUrl")
         
-        // If it's already a remote URL, skip upload and just update local/auth profile
         if (photoUrl.startsWith("http") || photoUrl.startsWith("https")) {
             Log.d("AuthRepository", "URL is already remote, skipping upload.")
             updateUserAndProfile(uid, photoUrl, onResult)
@@ -155,7 +149,6 @@ class AuthRepository private constructor(context: Context) {
 
         executor.execute {
             try {
-                // Copy URI content to local file for reliable local storage
                 val context = appContext
                 
                 Log.d("AuthRepository", "Copying image to local app storage...")
@@ -172,7 +165,6 @@ class AuthRepository private constructor(context: Context) {
                 val finalPath = localFile.absolutePath
                 Log.d("AuthRepository", "Local file saved at: $finalPath")
 
-                // Update local Room database
                 val user = userDao.getLoggedInUser()
                 if (user != null && user.uid == uid) {
                     val updatedUser = user.copy(localImagePath = finalPath)
@@ -195,7 +187,6 @@ class AuthRepository private constructor(context: Context) {
         
         val downloadUri = android.net.Uri.parse(remoteUrl)
         
-        // Update Firebase Auth Profile optionally
         val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
             .setPhotoUri(downloadUri)
             .build()
@@ -230,7 +221,6 @@ class AuthRepository private constructor(context: Context) {
                     var user = userDao.getLoggedInUser()
 
                     if (user == null || user.uid != firebaseUser.uid) {
-                        // Try to find existing user by UID or Email to restore bio/photo
                         val existingByUid = userDao.getUserByUid(firebaseUser.uid)
                         val existingByEmail = userDao.getUserByEmail(email)
                         val existingToMerge = existingByUid ?: existingByEmail
@@ -246,7 +236,6 @@ class AuthRepository private constructor(context: Context) {
                         )
                         userDao.logoutAll()
 
-                        // Deduplicate if needed
                         if (existingByEmail != null && existingByEmail.uid != firebaseUser.uid) {
                             userDao.deleteUserByUid(existingByEmail.uid)
                         }
@@ -291,7 +280,6 @@ class AuthRepository private constructor(context: Context) {
                     }
                 }
         } else {
-            // Fallback to local only if firebase user is missing (should generally not happen if logged in)
             executor.execute {
                 try {
                     val user = userDao.getLoggedInUser()

@@ -19,7 +19,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> = _user
 
-    // Transform user to posts count
     private val _userPostsCount = MediatorLiveData<Int>()
     val userPostsCount: LiveData<Int> = _userPostsCount
     private var _currentPostsSource: LiveData<List<Post>>? = null
@@ -55,7 +54,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             if (user != null) {
                 _user.value = user
             } else {
-                // Try to recover from Firebase session if local DB record is missing
                 authRepository.syncUserWithFirebase { recoveredUser ->
                     Log.d("ProfileViewModel", "Recovered user from Firebase: $recoveredUser")
                     _user.value = recoveredUser
@@ -69,7 +67,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         if (currentUser != null) {
             authRepository.updatePhotoUrl(currentUser.uid, uri) { success ->
                 if (success) {
-                    fetchUser() // Refresh user data
+                    fetchUser() 
                 }
                 _imageUpdateStatus.value = success
             }
