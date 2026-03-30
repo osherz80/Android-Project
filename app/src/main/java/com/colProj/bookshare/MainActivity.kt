@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Only apply top padding for status bar to the root
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
         }
@@ -45,7 +44,6 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Check if user is already logged in (Firebase or Local)
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         AuthRepository.getInstance(this).hasLoggedInUser { isLocalLoggedIn ->
             val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)

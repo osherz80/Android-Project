@@ -21,7 +21,6 @@ class MyPostsViewModel(application: Application) : AndroidViewModel(application)
         val userId = repository.getCurrentUserId() ?: ""
         emitSource(repository.getUserPosts(userId))
         
-        // Trigger refresh on init
         if (userId.isNotEmpty()) {
             refresh(userId)
         }

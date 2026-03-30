@@ -74,10 +74,8 @@ class BookRepository(private val context: Context) {
             val document = if (post.id.isNotEmpty()) postsCollection.document(post.id) else postsCollection.document()
             val newPost = post.copy(id = document.id)
             
-            // 1. Firestore (Async operation)
             document.set(newPost).await()
 
-            // 2. Room Cache Update
             postDao.insertPost(newPost)
 
             Resource.Success(Unit)

@@ -99,7 +99,6 @@ class AddBookFragment : Fragment() {
 
             btnSave.text = "Update Post"
         } else if (!args.bookTitle.isNullOrEmpty()) {
-            // ADD REVIEW MODE (from Book Details)
             etTitle.setText(args.bookTitle)
             etTitle.isEnabled = false
 
@@ -129,9 +128,7 @@ class AddBookFragment : Fragment() {
         val adapter = SearchResultsAdapter { book ->
              etTitle.setText(book.volumeInfo.title)
              etBookSummary.setText(book.volumeInfo.description)
-             etRecommendation.setText("") // Clear previous recommendation
-
-             // Auto-fill Author (Read-Only)
+             etRecommendation.setText("") 
              val authors = book.volumeInfo.authors?.joinToString(", ") ?: "Unknown Author"
              etAuthor.setText(authors)
 
@@ -139,7 +136,6 @@ class AddBookFragment : Fragment() {
              val secureImg = img?.replace("http:", "https:")
              etImage.setText(secureImg)
 
-             // Load Image with Glide
              if (!secureImg.isNullOrEmpty()) {
                 com.bumptech.glide.Glide.with(this@AddBookFragment)
                     .load(secureImg)
@@ -150,7 +146,6 @@ class AddBookFragment : Fragment() {
              rvSearch.visibility = View.GONE
         }
         rvSearch.adapter = adapter
-
         // Instant Search with Debounce
         var searchJob: kotlinx.coroutines.Job? = null
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -159,7 +154,7 @@ class AddBookFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                    kotlinx.coroutines.delay(1000) // 1000ms debounce
+                    kotlinx.coroutines.delay(1000) 
                     s?.toString()?.let { query ->
                         if (query.length > 2) {
                             performSearch(query)

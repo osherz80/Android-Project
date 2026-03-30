@@ -47,7 +47,6 @@ class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView
             onEditClick?.invoke(post)
         }
         
-        // Handle nested scroll inside RecyclerView
         holder.description.setOnTouchListener { v, event ->
             v.parent.requestDisallowInterceptTouchEvent(true)
             when (event.action and android.view.MotionEvent.ACTION_MASK) {
@@ -73,8 +72,6 @@ class PostsAdapter(private val showDeleteButton: Boolean = false) : RecyclerView
             holder.bookCover.setImageResource(R.color.input_bg)
         }
         
-        // Important: Click listener on itemView might conflict with touch listener on text if not careful, 
-        // but since description captures touches, clicking outside it should still work.
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(post)
         }

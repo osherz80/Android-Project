@@ -56,7 +56,6 @@ class MyPostsFragment : Fragment() {
         }
         
         adapter.setOnItemClickListener { post ->
-            // Navigate to details if needed
              val action = MyPostsFragmentDirections.actionMyPostsFragmentToBookDetailsFragment(
                  bookTitle = post.bookTitle,
                  author = post.author,

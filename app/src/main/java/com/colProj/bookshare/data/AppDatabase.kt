@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.colProj.bookshare.data.local.PostDao
 import com.colProj.bookshare.data.model.Post
 
-@Database(entities = [Post::class, User::class], version = 7) // Incremented version
+@Database(entities = [Post::class, User::class], version = 7)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun postDao(): PostDao
@@ -24,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "bookshare_db"
                 )
-                .fallbackToDestructiveMigration() // Handle schema changes during dev
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance
