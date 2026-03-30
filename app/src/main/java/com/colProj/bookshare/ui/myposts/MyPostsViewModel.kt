@@ -30,7 +30,7 @@ class MyPostsViewModel(application: Application) : AndroidViewModel(application)
     fun refresh(userId: String = "") {
         viewModelScope.launch {
              _refreshStatus.value = Resource.Loading()
-             val id = if (userId.isNotBlank()) userId else repository.getCurrentUserId() ?: ""
+             val id = userId.ifBlank { repository.getCurrentUserId() ?: "" }
              if (id.isNotBlank()) {
                  _refreshStatus.value = repository.refreshUserPosts(id)
              } else {
@@ -44,9 +44,6 @@ class MyPostsViewModel(application: Application) : AndroidViewModel(application)
             _refreshStatus.value = Resource.Loading()
             val result = repository.deletePost(postId)
             _refreshStatus.value = result
-            if (result is Resource.Success) {
-                // Refresh list if needed, but SnapshotListener should handle it
-            }
         }
     }
 }

@@ -47,7 +47,8 @@ class MyPostsFragment : Fragment() {
                 bookTitle = post.bookTitle,
                 author = post.author,
                 imageUrl = post.localImagePath ?: post.imageUrl,
-                bookSummary = post.description, // Mapped to recommendation field in AddBookFragment
+                bookSummary = post.bookSummary,
+                description = post.description,
                 postId = post.id,
                 rating = post.rating
             )
@@ -60,7 +61,7 @@ class MyPostsFragment : Fragment() {
                  bookTitle = post.bookTitle,
                  author = post.author,
                  imageUrl = post.localImagePath ?: post.imageUrl,
-                 bookSummary = post.description
+                 bookSummary = post.bookSummary
              )
              findNavController().navigate(action)
         }

@@ -67,7 +67,7 @@ class AuthFragment : Fragment() {
                 } else {
                     PasswordTransformationMethod.getInstance()
                 }
-                b.ivPasswordToggle.setImageResource(if (isPasswordVisible) R.drawable.ic_eye else R.drawable.ic_eye) 
+                b.ivPasswordToggle.setImageResource(R.drawable.ic_eye)
                 b.etPassword.setSelection(b.etPassword.text.length)
             }
 
